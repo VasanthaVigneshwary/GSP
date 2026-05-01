@@ -7,7 +7,6 @@ const { generateToken, generateRefreshToken } = require('../config/jwt');
 // @access  Public
 exports.signup = async (req, res) => {
   try {
-    // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
@@ -27,6 +26,14 @@ exports.signup = async (req, res) => {
       });
     }
 
+    // Validate password confirmation
+    if (password !== passwordConfirm) {
+      return res.status(400).json({
+        success: false,
+        message: 'Passwords do not match',
+      });
+    }
+
     // Create user
     user = await User.create({
       name,
@@ -41,7 +48,6 @@ exports.signup = async (req, res) => {
     const token = generateToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
 
-    // Return user data and tokens
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
