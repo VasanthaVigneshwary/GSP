@@ -1,0 +1,144 @@
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, 'Please provide a name'],
+      trim: true,
+      minlength: [2, 'Name must be at least 2 characters'],
+      maxlength: [50, 'Name cannot exceed 50 characters'],
+    },
+    email: {
+      type: String,
+      required: [true, 'Please provide an email'],
+      unique: true,
+      lowercase: true,
+      match: [
+        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+        'Please provide a valid email',
+      ],
+    },
+    password: {
+      type: String,
+      required: [true, 'Please provide a password'],
+      minlength: [6, 'Password must be at least 6 characters'],
+      select: false, // Don't return password by default
+    },
+    department: {
+      type: String,
+      enum: [
+        'Computer Science',
+        'Engineering',
+        'Business',
+        'Arts & Sciences',
+        'Education',
+        'Health & Medicine',
+        'Law',
+        'Other',
+      ],
+      required: [true, 'Please provide a department'],
+    },
+    year: {
+      type: String,
+      enum: ['Freshman', 'Sophomore', 'Junior', 'Senior', 'Other'],
+      required: [true, 'Please provide your year'],
+    },
+    points: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    rank: {
+      type: Number,
+      default: 0,
+    },
+    badges: [
+      {
+        type: String,
+        enum: [
+          'Early Bird',
+          'Social Butterfly',
+          'Event Organizer',
+          'Streak Master',
+          'Category Completionist',
+          'Campus Legend',
+          'Social Connector',
+          'Perfect Attendee',
+          'Team Player',
+          'Well-Rounded',
+        ],
+      },
+    ],
+    eventsAttended: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Event',
+      },
+    ],
+    eventsRegistered: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Event',
+      },
+    ],
+    friends: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    profileImage: {
+      type: String,
+      default: null,
+    },
+    bio: {
+      type: String,
+      maxlength: [500, 'Bio cannot exceed 500 characters'],
+      default: '',
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { timestamps: true }
+);
+
+// Hash password before saving
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    next();
+  }
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Method to compare passwords
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// Method to get public profile (without sensitive data)
+userSchema.methods.getPublicProfile = function () {
+  const userObject = this.toObject();
+  delete userObject.password;
+  return userObject;
+};
+
+module.exports = mongoose.model('User', userSchema);
