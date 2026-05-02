@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import EventDiscovery from './pages/EventDiscovery';
+import Wishlist from './pages/Wishlist';
 import './styles/app.css';
 
 function App() {
@@ -28,6 +29,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <EventDiscovery />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/wishlist"
+            element={
+              <ProtectedRoute>
+                <Wishlist />
               </ProtectedRoute>
             }
           />

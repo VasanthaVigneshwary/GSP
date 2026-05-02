@@ -83,6 +83,12 @@ const userSchema = new mongoose.Schema(
         ref: 'Event',
       },
     ],
+    eventsSaved: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Event',
+      },
+    ],
     friends: [
       {
         type: mongoose.Schema.Types.ObjectId,

@@ -31,7 +31,6 @@ const Signup = () => {
     setLocalError('');
     setSuccess('');
 
-    // Validation
     if (!formData.name || !formData.email || !formData.password || !formData.passwordConfirm || !formData.department || !formData.year) {
       setLocalError('Please fill in all fields');
       return;
@@ -52,7 +51,7 @@ const Signup = () => {
       setSuccess('Account created successfully! Redirecting...');
       setTimeout(() => {
         navigate('/dashboard');
-      }, 1000);
+      }, 800);
     } else {
       setLocalError(result.error || 'Signup failed');
     }
@@ -62,21 +61,13 @@ const Signup = () => {
     <div className="auth-container">
       <div className="auth-card auth-card-signup">
         <div className="auth-header">
-          <h1>🎓 Join Campus Events</h1>
-          <p>Create your account</p>
+          <h1>Join Campus Events</h1>
+          <p>Sign up to discover technology fairs, culture nights, and more.</p>
         </div>
 
-        {(error || localError) && (
-          <div className="alert alert-error">
-            ✗ {error || localError}
-          </div>
-        )}
+        {(error || localError) && <div className="alert alert-error">✗ {error || localError}</div>}
 
-        {success && (
-          <div className="alert alert-success">
-            ✓ {success}
-          </div>
-        )}
+        {success && <div className="alert alert-success">✓ {success}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
@@ -177,12 +168,8 @@ const Signup = () => {
             />
           </div>
 
-          <button
-            type="submit"
-            className="btn btn-primary btn-block"
-            disabled={loading}
-          >
-            {loading ? 'Creating Account...' : 'Create Account'}
+          <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+            {loading ? 'Creating account...' : 'Create account'}
           </button>
         </form>
 

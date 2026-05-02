@@ -27,7 +27,6 @@ const Login = () => {
     setLocalError('');
     setSuccess('');
 
-    // Basic validation
     if (!formData.email || !formData.password) {
       setLocalError('Please fill in all fields');
       return;
@@ -38,7 +37,7 @@ const Login = () => {
       setSuccess('Login successful! Redirecting...');
       setTimeout(() => {
         navigate('/dashboard');
-      }, 1000);
+      }, 800);
     } else {
       setLocalError(result.error || 'Login failed');
     }
@@ -48,21 +47,13 @@ const Login = () => {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <h1>🎓 Campus Events</h1>
-          <p>Sign in to your account</p>
+          <h1>Campus Events</h1>
+          <p>Access your campus dashboard and discover upcoming student experiences.</p>
         </div>
 
-        {(error || localError) && (
-          <div className="alert alert-error">
-            ✗ {error || localError}
-          </div>
-        )}
+        {(error || localError) && <div className="alert alert-error">✗ {error || localError}</div>}
 
-        {success && (
-          <div className="alert alert-success">
-            ✓ {success}
-          </div>
-        )}
+        {success && <div className="alert alert-success">✓ {success}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
@@ -93,37 +84,28 @@ const Login = () => {
             />
           </div>
 
-          <button
-            type="submit"
-            className="btn btn-primary btn-block"
-            disabled={loading}
-          >
-            {loading ? 'Signing in...' : 'Sign In'}
+          <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+            {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
 
         <div className="auth-footer">
           <p>
-            Don't have an account?{' '}
+            Don’t have an account?{' '}
             <Link to="/signup" className="link">
               Create one
-            </Link>
-          </p>
-          <p>
-            <Link to="/forgot-password" className="link">
-              Forgot password?
             </Link>
           </p>
         </div>
 
         <div className="auth-demo">
-          <p className="demo-title">Demo Login (built-in):</p>
+          <p className="demo-title">Demo Login</p>
           <code>
             Email: demo@demo.com
             <br />
             Password: demo123
           </code>
-          <p className="demo-note">If the backend is unavailable, this fake login will still let you enter.</p>
+          <p className="demo-note">Use the demo account when the backend is unavailable.</p>
         </div>
       </div>
     </div>

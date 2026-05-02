@@ -97,6 +97,7 @@ exports.login = async (req, res) => {
         department: 'Computer Science',
         year: 'Freshman',
         points: 0,
+        eventsSaved: [],
       };
       const token = generateToken(demoUser._id);
       const refreshToken = generateRefreshToken(demoUser._id);

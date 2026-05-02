@@ -8,6 +8,15 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const updateUser = useCallback((updatedUser) => {
+    setUser(updatedUser);
+    if (updatedUser) {
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, []);
+
   // Initialize auth state
   useEffect(() => {
     const storedUser = authService.getUser();
@@ -96,6 +105,7 @@ export const AuthProvider = ({ children }) => {
     signup,
     logout,
     updateProfile,
+    updateUser,
     isAuthenticated: !!user,
   };
 
