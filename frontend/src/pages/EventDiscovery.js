@@ -14,6 +14,7 @@ const EventDiscovery = () => {
   const [error, setError] = useState('');
   const [query, setQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
+  const [dateFilter, setDateFilter] = useState('All');
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -33,11 +34,20 @@ const EventDiscovery = () => {
   const handleRegister = async (eventId) => {
     try {
       const response = await eventService.registerForEvent(eventId);
-      alert(response.message || 'Registered successfully');
+      if (response.data.status === 'waitlisted') {
+        alert('Event is full. You have been added to the waitlist!');
+      } else {
+        alert(response.message || 'Registered successfully');
+      }
+      
+      // Update local state if needed (re-fetch events to get updated counts)
+      const updatedEvents = await eventService.getEvents();
+      setEvents(updatedEvents.data.events);
     } catch (err) {
       alert(err.response?.data?.message || err.message || 'Registration failed');
     }
   };
+
 
   const handleSave = async (eventId) => {
     try {
@@ -63,11 +73,28 @@ const EventDiscovery = () => {
 
   const filteredEvents = events.filter((event) => {
     const categoryMatch = categoryFilter === 'All' || event.category === categoryFilter;
+    
+    // Date Filtering Logic
+    let dateMatch = true;
+    const eventDate = new Date(event.date);
+    const now = new Date();
+    
+    if (dateFilter === 'Today') {
+      dateMatch = eventDate.toDateString() === now.toDateString();
+    } else if (dateFilter === 'This Week') {
+      const nextWeek = new Date();
+      nextWeek.setDate(now.getDate() + 7);
+      dateMatch = eventDate >= now && eventDate <= nextWeek;
+    } else if (dateFilter === 'This Month') {
+      dateMatch = eventDate.getMonth() === now.getMonth() && eventDate.getFullYear() === now.getFullYear();
+    }
+
     const lowerQuery = query.toLowerCase();
     const eventText = `${event.title} ${event.description} ${event.location} ${event.organizer}`.toLowerCase();
 
-    return categoryMatch && eventText.includes(lowerQuery);
+    return categoryMatch && dateMatch && eventText.includes(lowerQuery);
   });
+
 
   return (
     <div className="event-discovery-container">
@@ -95,22 +122,41 @@ const EventDiscovery = () => {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search events by title, location, or organizer"
           />
-          <button className="btn-filters" type="button" onClick={() => setCategoryFilter('All')}>
-            Reset
+          <button className="btn-filters" type="button" onClick={() => { setCategoryFilter('All'); setDateFilter('All'); setQuery(''); }}>
+            Reset All
           </button>
         </div>
-        <div className="category-chips">
-          {categories.map((category) => (
-            <button
-              key={category}
-              type="button"
-              className={`category-chip ${categoryFilter === category ? 'active' : ''}`}
-              onClick={() => setCategoryFilter(category)}
-            >
-              {category}
-            </button>
-          ))}
+        <div className="filter-group">
+          <label>Category</label>
+          <div className="category-chips">
+            {categories.map((category) => (
+              <button
+                key={category}
+                type="button"
+                className={`category-chip ${categoryFilter === category ? 'active' : ''}`}
+                onClick={() => setCategoryFilter(category)}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
         </div>
+        <div className="filter-group">
+          <label>Date</label>
+          <div className="category-chips">
+            {['All', 'Today', 'This Week', 'This Month'].map((date) => (
+              <button
+                key={date}
+                type="button"
+                className={`category-chip ${dateFilter === date ? 'active' : ''}`}
+                onClick={() => setDateFilter(date)}
+              >
+                {date}
+              </button>
+            ))}
+          </div>
+        </div>
+
       </div>
 
       <div className="events-list">
@@ -134,9 +180,20 @@ const EventDiscovery = () => {
               <span>⏰ {event.time}</span>
             </div>
             <div className="event-actions">
-              <button className="btn btn-primary" onClick={() => handleRegister(event._id)}>
-                Register
+              <button 
+                className={`btn ${event.registeredUsers.length >= event.capacity ? 'btn-waitlist' : 'btn-primary'}`}
+                onClick={() => handleRegister(event._id)}
+                disabled={event.registeredUsers.includes(user?._id) || event.waitlist?.includes(user?._id)}
+              >
+                {event.registeredUsers.includes(user?._id) 
+                  ? 'Registered' 
+                  : event.waitlist?.includes(user?._id)
+                    ? 'Waitlisted'
+                    : event.registeredUsers.length >= event.capacity 
+                      ? 'Join Waitlist' 
+                      : 'Register'}
               </button>
+
               <button
                 className={`btn btn-secondary ${savedEventIds.has(String(event._id)) ? 'saved' : ''}`}
                 onClick={() => handleSave(event._id)}

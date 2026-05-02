@@ -3,7 +3,13 @@ const dotenv = require('dotenv');
 const connectDB = require('./config/database');
 const authRoutes = require('./routes/auth');
 const eventRoutes = require('./routes/events');
+const userRoutes = require('./routes/users');
+const notificationRoutes = require('./routes/notifications');
+const clubRoutes = require('./routes/clubs');
 const User = require('./models/User');
+
+
+
 const Event = require('./models/Event');
 
 dotenv.config();
@@ -98,6 +104,12 @@ const startServer = async () => {
 
   app.use('/api/auth', authRoutes);
   app.use('/api/events', eventRoutes);
+  app.use('/api/users', userRoutes);
+  app.use('/api/notifications', notificationRoutes);
+  app.use('/api/clubs', clubRoutes);
+
+
+
 
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => {

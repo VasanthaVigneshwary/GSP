@@ -1,11 +1,74 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import eventService from '../services/eventService';
+import userService from '../services/userService';
+import notificationService from '../services/notificationService';
+import QRScanner from '../components/QRScanner';
+import NotificationCenter from '../components/NotificationCenter';
 import '../styles/dashboard.css';
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
+  const { user, updateUser, logout } = useAuth();
   const navigate = useNavigate();
+  const [showScanner, setShowScanner] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [checkInStatus, setCheckInStatus] = useState({ loading: false, message: '', type: '' });
+  const [activity, setActivity] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const [activityRes, notifRes] = await Promise.all([
+          userService.getActivityFeed(),
+          notificationService.getNotifications()
+        ]);
+        setActivity(activityRes.data.activity || []);
+        setUnreadCount(notifRes.data.unreadCount || 0);
+      } catch (err) {
+        console.error('Failed to fetch dashboard data');
+      }
+    };
+    fetchDashboardData();
+  }, []);
+
+
+
+  const handleScanSuccess = async (decodedText) => {
+    setCheckInStatus({ loading: true, message: 'Verifying QR code...', type: 'info' });
+    try {
+      const response = await eventService.checkIn(decodedText);
+      setCheckInStatus({
+        loading: false,
+        message: response.message || 'Check-in successful!',
+        type: 'success',
+      });
+      
+      // Update local user state with new points and badges
+      if (response.data) {
+        updateUser({
+          ...user,
+          points: response.data.points || user.points,
+          badges: response.data.badgeEarned 
+            ? [...(user.badges || []), response.data.badgeEarned] 
+            : user.badges,
+        });
+      }
+
+      // Close scanner after 3 seconds on success
+      setTimeout(() => {
+        setShowScanner(false);
+        setCheckInStatus({ loading: false, message: '', type: '' });
+      }, 3000);
+    } catch (err) {
+      setCheckInStatus({
+        loading: false,
+        message: err.response?.data?.message || 'Check-in failed. Invalid QR code.',
+        type: 'error',
+      });
+    }
+  };
 
   return (
     <div className="dashboard-container">
@@ -22,6 +85,13 @@ const Dashboard = () => {
               <button className="btn btn-primary" onClick={() => navigate('/events')}>
                 Discover events
               </button>
+              <button className="btn btn-checkin" onClick={() => setShowScanner(true)}>
+                📸 Check-in
+              </button>
+              <button className="btn btn-host" onClick={() => navigate('/create-event')}>
+                🎪 Host an Event
+              </button>
+
               <button className="btn btn-secondary" onClick={() => navigate('/wishlist')}>
                 View wishlist
               </button>
@@ -42,22 +112,59 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {showScanner && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h2>Scan Event QR Code</h2>
+                <button className="close-btn" onClick={() => setShowScanner(false)}>×</button>
+              </div>
+              <div className="modal-body">
+                {!checkInStatus.message || checkInStatus.type === 'info' ? (
+                  <QRScanner onScanSuccess={handleScanSuccess} />
+                ) : (
+                  <div className={`status-message ${checkInStatus.type}`}>
+                    {checkInStatus.type === 'success' ? '✅' : '❌'} {checkInStatus.message}
+                  </div>
+                )}
+                {checkInStatus.loading && <p className="loading-text">Processing...</p>}
+              </div>
+              <p className="scanner-hint">Point your camera at the event's QR code provided by the organizer.</p>
+            </div>
+          </div>
+        )}
+
         <div className="dashboard-grid">
           <div className="dashboard-main">
             <div className="card">
-              <h2>What’s next</h2>
-              <div className="event-summary">
-                <p>
-                  Explore the best student-led events on campus, from workshops to cultural meetups.
-                  Save the ones that matter most.
-                </p>
-                <button className="btn btn-primary" onClick={() => navigate('/events')}>
-                  Browse events
-                </button>
+              <h2>Social Feed</h2>
+              <div className="activity-feed">
+                {activity.length > 0 ? (
+                  activity.map((item) => (
+                    <div key={item._id} className="activity-item">
+                      <div className="activity-avatar">{item.name.charAt(0)}</div>
+                      <div className="activity-content">
+                        <p>
+                          <strong>{item.name}</strong> attended{' '}
+                          <strong>{item.eventsAttended[0]?.title || 'an event'}</strong>
+                        </p>
+                        <span className="activity-time">
+                          {item.eventsAttended[0] ? new Date(item.eventsAttended[0].date).toLocaleDateString() : 'Just now'}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="empty-feed">Follow friends to see their activity here!</p>
+                )}
               </div>
+              <button className="btn btn-secondary" style={{ marginTop: '1rem' }} onClick={() => navigate('/leaderboard')}>
+                Find Friends
+              </button>
             </div>
 
             <div className="card">
+
               <h2>Your Stats</h2>
               <div className="stats">
                 <div className="stat-box">
@@ -97,8 +204,26 @@ const Dashboard = () => {
                   <span>Year</span>
                   <strong>{user?.year || 'Freshman'}</strong>
                 </p>
+                {user?.bio && (
+                  <p className="profile-bio">
+                    <span>Bio</span>
+                    <strong>{user.bio}</strong>
+                  </p>
+                )}
+                {user?.interests && user.interests.length > 0 && (
+                  <div className="profile-interests">
+                    <span>Interests</span>
+                    <div className="interest-tags">
+                      {user.interests.map(i => <span key={i} className="tag">{i}</span>)}
+                    </div>
+                  </div>
+                )}
               </div>
+              <button className="btn btn-secondary" style={{ width: '100%', marginTop: '1rem' }} onClick={() => navigate('/profile/settings')}>
+                Edit Profile
+              </button>
             </div>
+
 
             <div className="card">
               <h2>Badges</h2>
@@ -121,22 +246,38 @@ const Dashboard = () => {
           <button className="btn" onClick={() => navigate('/dashboard')}>
             🏠
           </button>
+          <button className="btn" onClick={() => navigate('/profile/settings')}>
+            👤
+          </button>
           <button className="btn" onClick={() => navigate('/events')}>
             🔎
           </button>
           <button className="btn" onClick={() => navigate('/wishlist')}>
             ❤️
           </button>
-          <button className="btn" onClick={() => alert('Coming soon')}>
-            💬
+          <button className="btn" onClick={() => navigate('/leaderboard')}>
+            🏅
           </button>
-          <button className="btn" onClick={() => alert('Coming soon')}>
-            👤
+          <button className="btn" onClick={() => navigate('/clubs')}>
+            🏆
+          </button>
+
+          <button className="btn" onClick={() => setShowNotifications(true)}>
+            🔔 {unreadCount > 0 && <span className="notif-badge">{unreadCount}</span>}
           </button>
         </div>
+
+        {showNotifications && (
+          <NotificationCenter onClose={() => {
+            setShowNotifications(false);
+            setUnreadCount(0); // Reset count after viewing
+          }} />
+        )}
       </div>
     </div>
+
   );
 };
 
 export default Dashboard;
+

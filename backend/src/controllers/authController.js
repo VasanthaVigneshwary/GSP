@@ -227,8 +227,8 @@ exports.getCurrentUser = async (req, res) => {
 // @access  Private
 exports.updateProfile = async (req, res) => {
   try {
-    const { name, bio, profileImage, department, year } = req.body;
-
+    const { name, bio, profileImage, department, year, interests, privacySettings } = req.body;
+    
     const user = await User.findById(req.user.id);
 
     if (!user) {
@@ -240,10 +240,13 @@ exports.updateProfile = async (req, res) => {
 
     // Update fields
     if (name) user.name = name;
-    if (bio) user.bio = bio;
+    if (bio !== undefined) user.bio = bio;
     if (profileImage) user.profileImage = profileImage;
     if (department) user.department = department;
     if (year) user.year = year;
+    if (interests) user.interests = interests;
+    if (privacySettings) user.privacySettings = { ...user.privacySettings, ...privacySettings };
+
 
     await user.save();
 

@@ -50,6 +50,43 @@ const eventService = {
     });
     return response.data;
   },
+  
+  checkIn: async (qrCode) => {
+    const token = localStorage.getItem('token');
+    const response = await axios.post(
+      `${API_BASE_URL}/events/check-in`,
+      { qrCode },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  },
+
+  createEvent: async (eventData) => {
+    const token = localStorage.getItem('token');
+    const response = await axios.post(`${API_BASE_URL}/events`, eventData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  },
+
+  cancelRegistration: async (eventId) => {
+    const token = localStorage.getItem('token');
+    const response = await axios.delete(`${API_BASE_URL}/events/${eventId}/register`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  },
 };
+
+
+
 
 export default eventService;

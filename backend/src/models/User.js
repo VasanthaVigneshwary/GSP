@@ -95,6 +95,12 @@ const userSchema = new mongoose.Schema(
         ref: 'User',
       },
     ],
+    club: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Club',
+      default: null,
+    },
+
     profileImage: {
       type: String,
       default: null,
@@ -104,7 +110,29 @@ const userSchema = new mongoose.Schema(
       maxlength: [500, 'Bio cannot exceed 500 characters'],
       default: '',
     },
+    interests: [
+      {
+        type: String,
+        enum: ['Technical', 'Cultural', 'Sports', 'Workshop', 'Seminar', 'Other'],
+      },
+    ],
+    privacySettings: {
+      profileVisibility: {
+        type: String,
+        enum: ['Public', 'Friends-Only', 'Private'],
+        default: 'Public',
+      },
+      showPoints: {
+        type: Boolean,
+        default: true,
+      },
+      showBadges: {
+        type: Boolean,
+        default: true,
+      },
+    },
     isActive: {
+
       type: Boolean,
       default: true,
     },

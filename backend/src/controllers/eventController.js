@@ -1,5 +1,7 @@
 const Event = require('../models/Event');
 const User = require('../models/User');
+const { createNotification } = require('./notificationController');
+
 
 // List upcoming events
 exports.listEvents = async (req, res) => {
@@ -133,7 +135,7 @@ exports.getSavedEvents = async (req, res) => {
   }
 };
 
-// Register the authenticated user for an event
+// Register the authenticated user for an event (with waitlist support)
 exports.registerForEvent = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
@@ -145,6 +147,8 @@ exports.registerForEvent = async (req, res) => {
     }
 
     const userId = req.user.id;
+    
+    // Check if already registered
     if (event.registeredUsers.includes(userId)) {
       return res.status(400).json({
         success: false,
@@ -152,30 +156,64 @@ exports.registerForEvent = async (req, res) => {
       });
     }
 
-    if (event.registeredUsers.length >= event.capacity) {
+    // Check if already on waitlist
+    if (event.waitlist.includes(userId)) {
       return res.status(400).json({
         success: false,
-        message: 'Event is full. Please join the waitlist later.',
+        message: 'You are already on the waitlist for this event',
+      });
+    }
+
+    // Check capacity
+    if (event.registeredUsers.length >= event.capacity) {
+      event.waitlist.push(userId);
+      await event.save();
+
+      await createNotification(
+        userId,
+        'Waitlist Joined',
+        `You've been added to the waitlist for ${event.title}. We'll notify you if a spot opens up!`,
+        'System',
+        '/dashboard'
+      );
+
+      return res.status(200).json({
+        success: true,
+        message: 'Event is full. You have been added to the waitlist.',
+        data: {
+          event,
+          status: 'waitlisted',
+        },
       });
     }
 
     event.registeredUsers.push(userId);
     await event.save();
 
+    // Award 5 points for registration
     await User.findByIdAndUpdate(
       userId,
       {
-        $addToSet: { eventsRegistered: event._id, eventsAttended: event._id },
-        $inc: { points: event.points },
+        $addToSet: { eventsRegistered: event._id },
+        $inc: { points: 5 },
       },
       { new: true }
     );
 
+    await createNotification(
+      userId,
+      'Registration Success',
+      `You've registered for ${event.title}! +5 points earned.`,
+      'Check-in Success',
+      '/dashboard'
+    );
+
     return res.status(200).json({
       success: true,
-      message: 'Registered successfully',
+      message: 'Registered successfully! +5 points earned.',
       data: {
         event,
+        status: 'registered',
       },
     });
   } catch (error) {
@@ -185,3 +223,208 @@ exports.registerForEvent = async (req, res) => {
     });
   }
 };
+
+// Cancel registration or waitlist entry
+exports.cancelRegistration = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found',
+      });
+    }
+
+    const userId = req.user.id;
+    let wasRegistered = false;
+
+    if (event.registeredUsers.includes(userId)) {
+      event.registeredUsers.pull(userId);
+      wasRegistered = true;
+    } else if (event.waitlist.includes(userId)) {
+      event.waitlist.pull(userId);
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'You are not registered or waitlisted for this event',
+      });
+    }
+
+    // If a registered user cancelled, move someone from waitlist to registered
+    let promotedUser = null;
+    if (wasRegistered && event.waitlist.length > 0) {
+      promotedUser = event.waitlist.shift(); // FIFO
+      event.registeredUsers.push(promotedUser);
+      
+      // Notify promoted user
+      await createNotification(
+        promotedUser,
+        'Spot Opened!',
+        `Good news! A spot opened up for ${event.title} and you've been moved from the waitlist to registered!`,
+        'Event Reminder',
+        '/dashboard'
+      );
+      
+      // Also award them the registration points now
+      await User.findByIdAndUpdate(promotedUser, {
+        $addToSet: { eventsRegistered: event._id },
+        $inc: { points: 5 }
+      });
+    }
+
+    await event.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Successfully cancelled your entry.',
+      data: {
+        promotedUser: promotedUser ? 'A user from waitlist was promoted' : null
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Error cancelling registration',
+    });
+  }
+};
+
+
+// Check-in to an event using QR code
+exports.checkIn = async (req, res) => {
+  try {
+    const { qrCode } = req.body;
+    
+    if (!qrCode) {
+      return res.status(400).json({
+        success: false,
+        message: 'QR code is required',
+      });
+    }
+
+    const event = await Event.findOne({ qrCode });
+
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Invalid QR code. Event not found.',
+      });
+    }
+
+
+    const userId = req.user.id;
+
+    // Check if already checked in
+    if (event.attendees.includes(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'You have already checked in to this event',
+      });
+    }
+
+    // Check if user was registered (optional but recommended)
+    const isRegistered = event.registeredUsers.includes(userId);
+    
+    event.attendees.push(userId);
+    event.status = 'Ongoing'; // If someone checks in, the event is likely ongoing
+    await event.save();
+
+    // Award 20 points for check-in
+    // If they weren't registered, we could award less or just allow it
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        $addToSet: { eventsAttended: event._id },
+        $inc: { points: 20 },
+      },
+      { new: true }
+    );
+
+    // Check for "Early Bird" badge (First 10 attendees)
+    let badgeEarned = null;
+    if (event.attendees.length <= 10 && !user.badges.includes('Early Bird')) {
+      user.badges.push('Early Bird');
+      await user.save();
+      badgeEarned = 'Early Bird';
+    }
+
+    await createNotification(
+      userId,
+      'Check-in Success',
+      `You've checked in to ${event.title}! +20 points earned.`,
+      'Check-in Success',
+      '/dashboard'
+    );
+
+    if (badgeEarned) {
+      await createNotification(
+        userId,
+        'New Badge Earned!',
+        `Congratulations! You've earned the ${badgeEarned} badge for being an early attendee.`,
+        'Achievement',
+        '/dashboard'
+      );
+    }
+
+    return res.status(200).json({
+
+      success: true,
+      message: `Check-in successful! +20 points earned.${badgeEarned ? ` You've earned the ${badgeEarned} badge!` : ''}`,
+      data: {
+        event,
+        points: user.points,
+        badgeEarned,
+      },
+    });
+  }
+};
+
+// Create a new event (Organizer only)
+exports.createEvent = async (req, res) => {
+  try {
+    const {
+      title,
+      description,
+      date,
+      time,
+      location,
+      organizer,
+      category,
+      capacity,
+      points,
+    } = req.body;
+
+    const event = await Event.create({
+      title,
+      description,
+      date,
+      time,
+      location,
+      organizer,
+      category,
+      capacity,
+      points: points || 10,
+      createdBy: req.user.id,
+    });
+
+    // Award points to organizer for hosting an event
+    await User.findByIdAndUpdate(req.user.id, {
+      $inc: { points: 50 },
+      $addToSet: { badges: 'Event Organizer' }
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: 'Event created successfully! +50 points earned.',
+      data: {
+        event,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Error creating event',
+    });
+  }
+};
+

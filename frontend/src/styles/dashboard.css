@@ -179,6 +179,200 @@
   min-height: 54px;
 }
 
+/* Modal & Scanner Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  width: min(500px, 90vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #64748b;
+}
+
+.modal-body {
+  margin-bottom: 1.5rem;
+}
+
+.status-message {
+  padding: 2rem;
+  text-align: center;
+  border-radius: 1rem;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.status-message.success {
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.status-message.error {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.status-message.info {
+  background: #eff6ff;
+  color: #1e40af;
+}
+
+.loading-text {
+  text-align: center;
+  margin-top: 1rem;
+  color: #64748b;
+  font-style: italic;
+}
+
+.scanner-hint {
+  text-align: center;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.btn-checkin {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  min-width: 200px;
+}
+
+.btn-checkin:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+}
+
+.btn-host {
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  color: white;
+}
+
+.btn-host:hover {
+  background: linear-gradient(135deg, #6d28d9, #5b21b6);
+}
+
+.activity-feed {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.activity-avatar {
+  width: 44px;
+  height: 44px;
+  background: #eff6ff;
+  color: #2563eb;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.activity-content p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #334155;
+  line-height: 1.4;
+}
+
+.activity-time {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.empty-feed {
+  color: #64748b;
+  font-style: italic;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.interest-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.interest-tags .tag {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.profile-bio {
+  margin-top: 1rem;
+}
+
+.profile-bio strong {
+  display: block;
+  font-weight: 400;
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+  line-height: 1.5;
+}
+
+
+.notif-badge {
+  background: #ef4444;
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 999px;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+
+
+
+
 @media (max-width: 960px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
@@ -198,3 +392,4 @@
     flex-wrap: wrap;
   }
 }
+

@@ -7,7 +7,15 @@ import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import EventDiscovery from './pages/EventDiscovery';
 import Wishlist from './pages/Wishlist';
+import Leaderboard from './pages/Leaderboard';
+import EventCreation from './pages/EventCreation';
+import ProfileSettings from './pages/ProfileSettings';
+import Clubs from './pages/Clubs';
 import './styles/app.css';
+
+
+
+
 
 function App() {
   return (
@@ -40,7 +48,43 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/leaderboard"
+            element={
+              <ProtectedRoute>
+                <Leaderboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/create-event"
+            element={
+              <ProtectedRoute>
+                <EventCreation />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile/settings"
+            element={
+              <ProtectedRoute>
+                <ProfileSettings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/clubs"
+            element={
+              <ProtectedRoute>
+                <Clubs />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+
+
+
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </AuthProvider>
