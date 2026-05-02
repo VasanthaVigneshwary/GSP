@@ -17,14 +17,22 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
+  const extractUserFromResponse = (response) => {
+    return response?.data?.data?.user || response?.data?.user || null;
+  };
+
   // Login
   const login = useCallback(async (email, password) => {
     setLoading(true);
     setError(null);
     try {
       const response = await authService.login(email, password);
-      setUser(response.data.user);
-      return { success: true, user: response.data.user };
+      const userData = extractUserFromResponse(response);
+      if (userData) {
+        setUser(userData);
+        return { success: true, user: userData };
+      }
+      throw new Error('Invalid login response');
     } catch (err) {
       setError(err.message || 'Login failed');
       return { success: false, error: err.message };
@@ -39,8 +47,12 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const response = await authService.signup(userData);
-      setUser(response.data.user);
-      return { success: true, user: response.data.user };
+      const registeredUser = extractUserFromResponse(response);
+      if (registeredUser) {
+        setUser(registeredUser);
+        return { success: true, user: registeredUser };
+      }
+      throw new Error('Invalid signup response');
     } catch (err) {
       setError(err.message || 'Signup failed');
       return { success: false, error: err.message };
@@ -62,8 +74,12 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const response = await authService.updateProfile(profileData);
-      setUser(response.data.user);
-      return { success: true, user: response.data.user };
+      const updatedUser = extractUserFromResponse(response);
+      if (updatedUser) {
+        setUser(updatedUser);
+        return { success: true, user: updatedUser };
+      }
+      throw new Error('Invalid update response');
     } catch (err) {
       setError(err.message || 'Update failed');
       return { success: false, error: err.message };

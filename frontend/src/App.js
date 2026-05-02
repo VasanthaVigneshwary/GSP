@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
+import EventDiscovery from './pages/EventDiscovery';
 import './styles/app.css';
 
 function App() {
@@ -19,6 +20,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/events"
+            element={
+              <ProtectedRoute>
+                <EventDiscovery />
               </ProtectedRoute>
             }
           />
