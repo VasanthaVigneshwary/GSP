@@ -117,12 +117,13 @@ const Login = () => {
         </div>
 
         <div className="auth-demo">
-          <p className="demo-title">Demo Credentials:</p>
+          <p className="demo-title">Demo Login (built-in):</p>
           <code>
-            Email: student@university.edu
+            Email: demo@demo.com
             <br />
-            Password: password123
+            Password: demo123
           </code>
+          <p className="demo-note">If the backend is unavailable, this fake login will still let you enter.</p>
         </div>
       </div>
     </div>

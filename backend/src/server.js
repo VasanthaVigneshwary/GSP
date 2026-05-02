@@ -1,14 +1,12 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const connectDB = require('./config/database');
-
-// Load environment variables
-dotenv.config();
-
-// Connect to MongoDB
-connectDB();
+const authRoutes = require('./routes/auth');
 
 const app = express();
+
+// Connect to database
+connectDB();
 
 // Middleware
 app.use(express.json());
