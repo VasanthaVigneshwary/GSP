@@ -31,7 +31,6 @@ const Dashboard = () => {
           userService.getUserStats()
         ]);
         setActivity(activityRes.data.activity || []);
-        setUnreadCount(notifRes.data.unreadCount || 0);
         
         // Sync user stats (points, streak, activityLog) with the context
         if (statsRes.data) {
@@ -271,7 +270,6 @@ const Dashboard = () => {
         {showNotifications && (
           <NotificationCenter onClose={() => {
             setShowNotifications(false);
-            setUnreadCount(0); // Reset count after viewing
           }} />
         )}
       </div>
