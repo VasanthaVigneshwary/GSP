@@ -9,6 +9,8 @@ import NotificationCenter from '../components/NotificationCenter';
 import XPProgressBar from '../components/XPProgressBar';
 import ActivityCalendar from '../components/ActivityCalendar';
 import CertificateGallery from '../components/CertificateGallery';
+import AIAssistant from '../components/AIAssistant';
+import { FederatedStore } from '../utils/FederatedStore';
 import '../styles/dashboard.css';
 
 const Dashboard = () => {
@@ -46,7 +48,10 @@ const Dashboard = () => {
         console.error('Failed to fetch dashboard data');
       }
     };
-    if (user) fetchDashboardData();
+    if (user) {
+      fetchDashboardData();
+      FederatedStore.logInteraction('Dashboard View', { timestamp: new Date() });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -136,6 +141,8 @@ const Dashboard = () => {
 
         <div className="dashboard-grid">
           <div className="dashboard-main">
+            <AIAssistant user={user} />
+            
             <div className="card">
               <h2>Social Feed</h2>
               <div className="activity-feed">

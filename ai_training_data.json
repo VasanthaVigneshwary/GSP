@@ -1,0 +1,17 @@
+[
+  {"prompt": "Points: 0, Year: Freshman, Interests: Technical", "output": "Welcome to GSP! Start by registering for a 'Intro to Coding' event to earn your first 50 XP."},
+  {"prompt": "Points: 435, Year: Junior, Interests: Leadership", "output": "Your leadership skills are growing! Host a small club meeting to reach Level 6 and earn a 'Community Builder' badge."},
+  {"prompt": "Points: 850, Year: Senior, Interests: Engineering", "output": "Expert level reached. Use your Engineering certificates to mentor freshmen and earn exclusive 'Mentor' points."},
+  {"prompt": "Streak: 7, Points: 200, Interests: Cultural", "output": "7 days of consistency! Don't stop now—attend a dance workshop today to keep your streak alive."},
+  {"prompt": "Certificates: 0, Points: 150, Year: Sophomore", "output": "Time to showcase your skills! Complete a certified workshop this weekend to populate your certificate gallery."},
+  {"prompt": "Interests: Sports, Points: 50, Year: Freshman", "output": "Score big! Join the local sports meet this Friday to earn points and meet fellow athletes."},
+  {"prompt": "Points: 1000, Year: Senior, Streak: 30", "output": "GSP Legend! Your 30-day streak is the highest in your department. You've set the bar high for everyone."},
+  {"prompt": "Points: 75, Year: Freshman, Interests: Music", "output": "Find your rhythm. The 'Campus Band' is looking for members—join them for a 30 XP boost."},
+  {"prompt": "Streak: 1, Points: 10, Interests: Seminar", "output": "Small steps lead to big rewards. Attend one more seminar today to double your daily point multiplier."},
+  {"prompt": "Points: 300, Year: Junior, Interests: Research", "output": "The future of science is you! Log your research hours as an event to gain 'Academic Excellence' points."},
+  {"prompt": "Certificates: 3, Points: 400, Year: Sophomore", "output": "Impressive portfolio! Share your 3 certificates on the leaderboard to increase your visibility among recruiters."},
+  {"prompt": "Points: 20, Year: Freshman, Interests: Volunteer", "output": "Heart of gold! Sign up for the 'Beach Cleanup' event to earn 50 XP and a 'Nature Hero' badge."},
+  {"prompt": "Streak: 14, Points: 600, Interests: Gaming", "output": "Level Up! Your 14-day streak in the Gaming Club has unlocked a special avatar border."},
+  {"prompt": "Points: 150, Year: Senior, Interests: Business", "output": "Final lap! Attend the 'Entrepreneurship Summit' to network and finish your senior year as a Level 5 leader."},
+  {"prompt": "Points: 0, Year: Sophomore, Interests: Art", "output": "Canvas awaits! Register for the 'Digital Art Expo' to kickstart your GSP journey with 100 bonus XP."}
+]
