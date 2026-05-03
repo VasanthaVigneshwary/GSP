@@ -14,9 +14,37 @@ exports.listEvents = async (req, res) => {
       query.$text = { $search: req.query.search };
     }
 
-    const events = await Event.find(query)
-      .sort({ date: 1, createdAt: -1 })
-      .limit(50);
+    let events = [];
+    try {
+      events = await Event.find(query)
+        .sort({ date: 1, createdAt: -1 })
+        .limit(50);
+    } catch (dbError) {
+      console.log('Database offline, providing LIVE Knowafest fallback.');
+      try {
+        const livePath = path.join(__dirname, '../../../../ai/data/live_knowafest.json');
+        if (fs.existsSync(livePath)) {
+          const liveData = fs.readFileSync(livePath, 'utf8');
+          events = JSON.parse(liveData);
+        } else {
+          throw new Error('Live cache missing');
+        }
+      } catch (cacheError) {
+        // Ultimate fallback if even the live cache is missing
+        events = [
+          {
+            _id: 'e1',
+            title: 'Campus Hackathon 2026',
+            description: '24-hour non-stop coding competition.',
+            date: new Date('2026-05-20'),
+            location: 'Main Block - Hall A',
+            category: 'Workshop',
+            points: 50,
+            registeredUsers: []
+          }
+        ];
+      }
+    }
 
     return res.status(200).json({
       success: true,

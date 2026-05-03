@@ -7,7 +7,7 @@
 - [ ] Add "Sentiment Analysis" to event feedback.
 
 ## 🌐 External Integrations
-- [ ] Build scrapers for Knowafest.com (Area-specific).
+- [x] Build scrapers for Knowafest.com (Area-specific).
 - [ ] Build scrapers for Unstop.com (Technical/Case study).
 - [ ] Implement GitHub commit-to-XP conversion logic in `aiSyncService.js`.
 

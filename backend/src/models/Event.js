@@ -26,16 +26,19 @@ const eventSchema = new mongoose.Schema({
   },
   organizer: {
     type: String,
-    required: [true, 'Please add an organizer']
+    default: 'External Organizer'
   },
   category: {
     type: String,
-    required: [true, 'Please add a category'],
-    enum: ['Technical', 'Cultural', 'Sports', 'Workshop', 'Seminar', 'Other']
+    required: [true, 'Please add a category']
   },
   capacity: {
     type: Number,
-    required: [true, 'Please add a capacity']
+    default: 100
+  },
+  time: {
+    type: String,
+    default: 'Full Day'
   },
   image: {
     type: String,
@@ -46,8 +49,20 @@ const eventSchema = new mongoose.Schema({
     default: 10
   },
   qrCode: {
-    type: String, // This will store the data encoded in the QR code
+    type: String,
     unique: true
+  },
+  isExternal: {
+    type: Boolean,
+    default: false
+  },
+  externalLink: {
+    type: String,
+    default: ''
+  },
+  source: {
+    type: String,
+    default: 'GSP'
   },
   attendees: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -70,7 +85,7 @@ const eventSchema = new mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: false // Optional for external events
   }
 }, {
   timestamps: true

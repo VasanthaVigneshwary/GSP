@@ -1,5 +1,6 @@
 const axios = require('axios');
 const User = require('../models/User');
+const aiScraperService = require('./aiScraperService');
 
 /**
  * Syncs GitHub commit activity for a specific user
@@ -53,6 +54,11 @@ const pruneOldData = async () => {
  */
 const performWeekendSync = async () => {
   console.log('Starting Weekend Sync...');
+  
+  // 1. Scrape new events for everyone
+  console.log('Sync: Scraping latest events from Knowafest...');
+  await aiScraperService.syncScrapedEvents();
+
   const users = await User.find({ githubUsername: { $exists: true, $ne: '' } });
   
   for (const user of users) {
