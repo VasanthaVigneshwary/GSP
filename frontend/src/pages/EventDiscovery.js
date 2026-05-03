@@ -7,6 +7,7 @@ import '../styles/eventDiscovery.css';
 const categories = ['All', 'Hackathon', 'Technical', 'Cultural', 'Sports', 'Workshop', 'Seminar', 'Other'];
 
 const EventDiscovery = () => {
+  // Production-ready Event Hub
   const navigate = useNavigate();
   const { user, updateUser } = useAuth();
   const [events, setEvents] = useState([]);
