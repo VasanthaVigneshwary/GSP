@@ -23,23 +23,27 @@ exports.askAI = async (req, res) => {
     // 2. Retrieve Live Event Context (RAG)
     const eventContext = await aiRagService.getContext(question);
 
-    // 3. Construct the "System Prompt" with Context
-    const prompt = `
-      You are the GSP AI Career Mentor. 
-      ${userSummary}
-      
-      ${eventContext ? `Use these live opportunities to give specific advice:\n${eventContext}` : 'No specific live events found for this query.'}
-      
-      Respond as a helpful, encouraging mentor. If live events were provided, explain WHY they are good for the student.
-    `;
+    // 3. New: Hybrid Transformer Inference
+    // We call the Python bridge to let the Transformer rank the results
+    let personalizedAdvice = "";
+    try {
+        const { execSync } = require('child_process');
+        const pythonPath = 'python'; // or 'python3'
+        const scriptPath = path.resolve(__dirname, '../../../ai/core/hybrid_inference.py');
+        
+        const hybridOutput = execSync(`${pythonPath} ${scriptPath} "${question}" "${userId}"`).toString();
+        const hybridResult = JSON.parse(hybridOutput);
+        personalizedAdvice = hybridResult.personalized_recommendation;
+    } catch (err) {
+        console.warn('Hybrid Inference Offline, falling back to standard RAG.', err.message);
+    }
 
-    // 4. Simulate AI Generation (since we don't have an LLM API key connected yet)
-    // In production, you would send 'prompt' and 'question' to OpenAI/Gemini.
+    // 4. Construct the response
     let response = "";
     if (eventContext) {
-        response = `Based on your interests, I found some great live opportunities! ${eventContext.split('\n')[1].replace('- ', '')} looks perfect for you. Participating in these will earn you high XP and boost your ${user.department || 'tech'} career profile.`;
+        response = personalizedAdvice || `Based on your profile, I recommend: ${eventContext.split('\n')[1].replace('- ', '')}. This matches your track!`;
     } else {
-        response = "I couldn't find specific live events for that right now, but I recommend checking the 'Hackathon' section. Keep building your XP!";
+        response = "I'm analyzing your profile with my Transformer core. For now, keep building your XP in the 'Hackathon' section!";
     }
 
     return res.status(200).json({
