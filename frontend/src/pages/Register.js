@@ -9,6 +9,7 @@ const Register = () => {
     name: '',
     email: '',
     password: '',
+    passwordConfirm: '',
     department: 'Computer Science',
     year: 'Freshman'
   });
@@ -22,8 +23,8 @@ const Register = () => {
     setError('');
     setLoading(true);
     try {
-      const response = await authService.register(formData);
-      updateUser(response.data.user);
+      const data = await authService.register(formData);
+      updateUser(data.user);
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Try again.');
@@ -98,6 +99,17 @@ const Register = () => {
               placeholder="Minimum 6 characters"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Confirm Password</label>
+            <input
+              type="password"
+              placeholder="Repeat your password"
+              value={formData.passwordConfirm}
+              onChange={(e) => setFormData({ ...formData, passwordConfirm: e.target.value })}
               required
             />
           </div>

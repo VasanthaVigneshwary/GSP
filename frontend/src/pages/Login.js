@@ -16,8 +16,8 @@ const Login = () => {
     setError('');
     setLoading(true);
     try {
-      const response = await authService.login(formData);
-      updateUser(response.data.user);
+      const data = await authService.login(formData);
+      updateUser(data.user);
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid email or password');
