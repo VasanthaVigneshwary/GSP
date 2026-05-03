@@ -170,7 +170,7 @@ exports.getActivityFeed = async (req, res) => {
     });
   }
 };
-const learningService = require('../services/learningService');
+const learningService = require('../services/aiLearningService');
 
 // @route   POST /api/users/learning/contribute
 // @desc    Receive federated learning contribution from device

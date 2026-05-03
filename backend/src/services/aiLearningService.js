@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const FEDERATED_DATA_PATH = path.join(__dirname, '../../federated_training_buffer.json');
+const FEDERATED_DATA_PATH = path.join(__dirname, '../../../../ai/data/federated_buffer.json');
 
 /**
  * Aggregates a learning contribution from a student's device

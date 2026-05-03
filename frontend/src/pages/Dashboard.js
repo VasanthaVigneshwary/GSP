@@ -10,7 +10,7 @@ import XPProgressBar from '../components/XPProgressBar';
 import ActivityCalendar from '../components/ActivityCalendar';
 import CertificateGallery from '../components/CertificateGallery';
 import AIAssistant from '../components/AIAssistant';
-import { FederatedStore } from '../utils/FederatedStore';
+import { FederatedStore } from '../services/FederatedStore';
 import '../styles/dashboard.css';
 
 const Dashboard = () => {

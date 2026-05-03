@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FederatedStore } from '../utils/FederatedStore';
+import { FederatedStore } from '../services/FederatedStore';
 import axios from 'axios';
 import '../styles/profileSettings.css';
 
