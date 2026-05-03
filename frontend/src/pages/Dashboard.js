@@ -98,24 +98,6 @@ const Dashboard = () => {
               event you attend.
             </p>
             <XPProgressBar points={user?.points || 0} />
-            <div className="hero-actions">
-              <button className="btn btn-primary" onClick={() => navigate('/events')}>
-                Discover events
-              </button>
-              <button className="btn btn-checkin" onClick={() => setShowScanner(true)}>
-                📸 Check-in
-              </button>
-              <button className="btn btn-host" onClick={() => navigate('/create-event')}>
-                🎪 Host an Event
-              </button>
-
-              <button className="btn btn-secondary" onClick={() => navigate('/wishlist')}>
-                View wishlist
-              </button>
-              <button className="btn btn-secondary" onClick={logout}>
-                Logout
-              </button>
-            </div>
           </div>
           <div className="hero-metrics">
             <div className="stat-box">
@@ -266,31 +248,6 @@ const Dashboard = () => {
               )}
             </div>
           </div>
-        </div>
-
-        <div className="dashboard-footer">
-          <button className="btn" onClick={() => navigate('/dashboard')}>
-            🏠
-          </button>
-          <button className="btn" onClick={() => navigate('/profile/settings')}>
-            👤
-          </button>
-          <button className="btn" onClick={() => navigate('/events')}>
-            🔎
-          </button>
-          <button className="btn" onClick={() => navigate('/wishlist')}>
-            ❤️
-          </button>
-          <button className="btn" onClick={() => navigate('/leaderboard')}>
-            🏅
-          </button>
-          <button className="btn" onClick={() => navigate('/clubs')}>
-            🏆
-          </button>
-
-          <button className="btn" onClick={() => setShowNotifications(true)}>
-            🔔 {unreadCount > 0 && <span className="notif-badge">{unreadCount}</span>}
-          </button>
         </div>
 
         {showNotifications && (

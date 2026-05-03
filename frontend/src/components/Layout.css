@@ -1,0 +1,27 @@
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f8fafc; /* Clean light background */
+}
+
+.layout-content {
+  flex: 1;
+  margin-left: 260px; /* Width of sidebar */
+  transition: margin-left 0.3s ease;
+  min-height: 100vh;
+}
+
+.content-inner {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .layout-content {
+    margin-left: 80px;
+  }
+  .content-inner {
+    padding: 1rem;
+  }
+}
