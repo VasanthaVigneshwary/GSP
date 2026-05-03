@@ -12,10 +12,13 @@ const User = require('./models/User');
 
 const Event = require('./models/Event');
 
+const cors = require('cors');
+
 dotenv.config();
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 const seedDemoUser = async () => {
@@ -117,4 +120,6 @@ const startServer = async () => {
   });
 };
 
-startServer();
+startServer().catch(err => {
+  console.error('✗ Server failed to start:', err.message);
+});

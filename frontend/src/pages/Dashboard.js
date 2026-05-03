@@ -6,6 +6,8 @@ import userService from '../services/userService';
 import notificationService from '../services/notificationService';
 import QRScanner from '../components/QRScanner';
 import NotificationCenter from '../components/NotificationCenter';
+import XPProgressBar from '../components/XPProgressBar';
+import ActivityCalendar from '../components/ActivityCalendar';
 import '../styles/dashboard.css';
 
 const Dashboard = () => {
@@ -20,17 +22,31 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [activityRes, notifRes] = await Promise.all([
+        const [activityRes, notifRes, statsRes] = await Promise.all([
           userService.getActivityFeed(),
-          notificationService.getNotifications()
+          notificationService.getNotifications(),
+          userService.getUserStats()
         ]);
         setActivity(activityRes.data.activity || []);
         setUnreadCount(notifRes.data.unreadCount || 0);
+        
+        // Sync user stats (points, streak, activityLog) with the context
+        if (statsRes.data) {
+          updateUser({
+            ...user,
+            points: statsRes.data.points,
+            streak: statsRes.data.streak,
+            activityLog: statsRes.data.activityLog,
+            badges: statsRes.data.badges,
+            rank: statsRes.data.rank,
+          });
+        }
       } catch (err) {
         console.error('Failed to fetch dashboard data');
       }
     };
-    fetchDashboardData();
+    if (user) fetchDashboardData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
@@ -81,6 +97,7 @@ const Dashboard = () => {
               Manage your campus activity stream, explore upcoming events, and earn points with every
               event you attend.
             </p>
+            <XPProgressBar points={user?.points || 0} />
             <div className="hero-actions">
               <button className="btn btn-primary" onClick={() => navigate('/events')}>
                 Discover events
@@ -180,6 +197,15 @@ const Dashboard = () => {
                   <p>Department</p>
                 </div>
               </div>
+              
+              <div className="activity-section">
+                <h3>Activity Insight</h3>
+                <ActivityCalendar activityLog={user?.activityLog || []} />
+                <div className="streak-info">
+                  <span className="streak-badge">🔥 {user?.streak || 0} Day Streak</span>
+                </div>
+              </div>
+              
               <p>Attend one more event to level up your campus leaderboard status.</p>
             </div>
           </div>

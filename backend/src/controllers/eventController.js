@@ -329,16 +329,40 @@ exports.checkIn = async (req, res) => {
     event.status = 'Ongoing'; // If someone checks in, the event is likely ongoing
     await event.save();
 
+    const user = await User.findById(userId);
+    
+    // Update daily activity log
+    const today = new Date().toISOString().split('T')[0];
+    const logIndex = user.activityLog.findIndex(log => log.date === today);
+    
+    if (logIndex > -1) {
+      user.activityLog[logIndex].count += 1;
+    } else {
+      user.activityLog.push({ date: today, count: 1 });
+    }
+
+    // Update streak logic
+    if (user.lastActivityDate) {
+      const lastDate = new Date(user.lastActivityDate);
+      const currentDate = new Date(today);
+      const diffTime = Math.abs(currentDate - lastDate);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 1) {
+        user.streak += 1;
+      } else if (diffDays > 1) {
+        user.streak = 1; // Reset streak if missed a day
+      }
+    } else {
+      user.streak = 1;
+    }
+    user.lastActivityDate = today;
+
     // Award 20 points for check-in
-    // If they weren't registered, we could award less or just allow it
-    const user = await User.findByIdAndUpdate(
-      userId,
-      {
-        $addToSet: { eventsAttended: event._id },
-        $inc: { points: 20 },
-      },
-      { new: true }
-    );
+    user.eventsAttended.addToSet(event._id);
+    user.points += 20;
+    
+    await user.save();
 
     // Check for "Early Bird" badge (First 10 attendees)
     let badgeEarned = null;
@@ -375,6 +399,11 @@ exports.checkIn = async (req, res) => {
         points: user.points,
         badgeEarned,
       },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Error during check-in',
     });
   }
 };

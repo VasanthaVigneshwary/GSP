@@ -1,0 +1,51 @@
+.activity-calendar-wrapper {
+  background: rgba(0, 0, 0, 0.02);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  margin-top: 1rem;
+}
+
+.calendar-header {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 12px);
+  grid-auto-flow: column;
+  grid-template-rows: repeat(7, 12px);
+  gap: 3px;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.calendar-day {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: #ebedf0; /* Light theme empty color */
+}
+
+.calendar-day.level-0 { background: #ebedf0; }
+.calendar-day.level-1 { background: #0e4429; }
+.calendar-day.level-2 { background: #006d32; }
+.calendar-day.level-3 { background: #26a641; }
+.calendar-day.level-4 { background: #39d353; }
+
+.calendar-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.legend {
+  display: flex;
+  gap: 3px;
+}

@@ -96,7 +96,15 @@ exports.login = async (req, res) => {
         email,
         department: 'Computer Science',
         year: 'Freshman',
-        points: 0,
+        points: 435,
+        streak: 7,
+        activityLog: [
+          { date: new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0], count: 3 },
+          { date: new Date(Date.now() - 86400000 * 1).toISOString().split('T')[0], count: 5 },
+          { date: new Date().toISOString().split('T')[0], count: 2 },
+          { date: new Date(Date.now() - 86400000 * 10).toISOString().split('T')[0], count: 1 },
+          { date: new Date(Date.now() - 86400000 * 15).toISOString().split('T')[0], count: 4 },
+        ],
         eventsSaved: [],
       };
       const token = generateToken(demoUser._id);

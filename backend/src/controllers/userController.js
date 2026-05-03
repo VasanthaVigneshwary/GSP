@@ -41,8 +41,15 @@ exports.getUserStats = async (req, res) => {
         points: user.points,
         badges: user.badges,
         rank,
+        streak: user.streak || 0,
+        activityLog: user.activityLog || [],
         eventsCount: user.eventsAttended.length,
       },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Error fetching user stats',
     });
   }
 };

@@ -136,6 +136,26 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    activityLog: [
+      {
+        date: {
+          type: String, // Format: YYYY-MM-DD
+          required: true,
+        },
+        count: {
+          type: Number,
+          default: 0,
+        },
+      }
+    ],
+    streak: {
+      type: Number,
+      default: 0,
+    },
+    lastActivityDate: {
+      type: String,
+      default: null,
+    },
     createdAt: {
       type: Date,
       default: Date.now,
