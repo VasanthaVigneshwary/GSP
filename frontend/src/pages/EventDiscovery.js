@@ -225,8 +225,7 @@ const EventDiscovery = () => {
 
       <div className="events-list">
         {loading && <p>Loading events...</p>}
-        {error && <p className="error-text">{error}</p>}
-        {!loading && !error && sortedEvents.length === 0 && (
+        {!loading && sortedEvents.length === 0 && (
           <p className="error-text">No events match your search criteria.</p>
         )}
         {sortedEvents.map((event) => (
