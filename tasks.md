@@ -1,26 +1,21 @@
-# GSP Project: Next Steps & Improvisations
+# GSP Project Roadmap 🚀
 
-## 🤖 AI & Machine Learning
-- [ ] Deploy Transformer model as a Python Flask/FastAPI service.
-- [ ] Connect `AIAssistant.js` to the real model endpoint.
-- [ ] Implement automated weekend fine-tuning on `federated_buffer.json`.
-- [ ] Add "Sentiment Analysis" to event feedback.
+## Phase 1: AI & Event Automation (COMPLETED ✅)
+- [x] **Autonomous Web Scrapers**: Knowafest & Unstop integration.
+- [x] **Hybrid AI Brain**: Connected RAG (Facts) with Transformer (Personalization).
+- [x] **Live Event Feed**: Multi-source feed with 40+ live technical opportunities.
+- [x] **Gamified Discovery**: XP Badges, High-XP glows, and Hackathon categorization.
 
-## 🌐 External Integrations
-- [x] Build scrapers for Knowafest.com (Area-specific).
-- [ ] Build scrapers for Unstop.com (Technical/Case study).
-- [ ] Implement GitHub commit-to-XP conversion logic in `aiSyncService.js`.
+## Phase 2: Social & Campus Rivalry (UP NEXT 🏁)
+- [ ] **Departmental Leaderboard**: Track CS vs EEE vs Mech performance.
+- [ ] **AI Mentor UI**: Add a premium "Glass" chat interface to the Dashboard.
+- [ ] **Guilds/Clubs**: Create community spaces for team-based competition.
+- [ ] **Student Profiles**: Enhance with AI-generated "Career Roadmaps."
 
-## 🎮 Gamification & Social
-- [ ] Implement "Departmental Leaderboard" (CS vs EEE vs Mech).
-- [ ] Create "Guilds" (Team-based points and missions).
-- [ ] Add real-time notifications for when a friend overtakes you on the leaderboard.
-- [ ] Add a "Certificate Verification" public link for external recruiters.
-
-## 🛠️ Infrastructure & Data
-- [ ] Migrate local data pruning to a standard Cron Job.
-- [ ] Implement "Archival Collection" for old event data to save main DB space.
-- [ ] Add GPS-fencing to QR check-ins to prevent remote cheating.
+## Phase 3: Engagement & Rewards (FUTURE 💎)
+- [ ] **Daily Missions**: "Register for 1 Hackathon" or "Connect with 2 Peers."
+- [ ] **Badge System**: Visual achievements for XP milestones.
+- [ ] **Certificate Generator**: Automatically generate XP-verified participation certificates.
 
 ---
-*Checked items indicate completion. Add your own ideas below!*
+*Last Updated: May 3rd, 2026 - AI Core is now 100% operational.*
