@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { FederatedStore } from '../utils/FederatedStore';
+import axios from 'axios';
 import '../styles/profileSettings.css';
 
 const departments = [
@@ -70,6 +72,31 @@ const ProfileSettings = () => {
       }
     } catch (err) {
       alert(err.message || 'Failed to update profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSyncLearning = async () => {
+    setLoading(true);
+    try {
+      const contribution = FederatedStore.generateWeekendContribution(user);
+      if (!contribution) {
+        alert('No new learning data to sync yet. Keep using the app!');
+        return;
+      }
+
+      const token = localStorage.getItem('token');
+      await axios.post('http://localhost:5000/api/users/learning/contribute', 
+        { contribution },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      FederatedStore.clearMemory();
+      setSuccess('Learning contribution synced to Hub!');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      alert('Failed to sync learning: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -221,6 +248,15 @@ const ProfileSettings = () => {
             {success && <div className="success-banner">{success}</div>}
             <button type="submit" className="btn btn-primary" disabled={loading}>
               {loading ? 'Saving Changes...' : 'Save All Changes'}
+            </button>
+            <button 
+              type="button" 
+              className="btn btn-secondary" 
+              onClick={handleSyncLearning} 
+              disabled={loading}
+              style={{ marginLeft: '1rem', background: 'var(--success-color)', color: 'white' }}
+            >
+              🚀 Sync Learning to Hub
             </button>
           </div>
         </form>

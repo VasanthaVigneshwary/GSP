@@ -170,4 +170,29 @@ exports.getActivityFeed = async (req, res) => {
     });
   }
 };
+const learningService = require('../services/learningService');
 
+// @route   POST /api/users/learning/contribute
+// @desc    Receive federated learning contribution from device
+// @access  Private
+exports.postLearningContribution = async (req, res) => {
+  try {
+    const { contribution } = req.body;
+    if (!contribution) {
+      return res.status(400).json({ success: false, message: 'No contribution data' });
+    }
+
+    const success = await learningService.aggregateContribution(contribution);
+    
+    if (success) {
+      return res.status(200).json({ 
+        success: true, 
+        message: 'Learning contribution aggregated successfully' 
+      });
+    } else {
+      throw new Error('Failed to aggregate');
+    }
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
