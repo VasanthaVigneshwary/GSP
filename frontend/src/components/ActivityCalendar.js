@@ -24,7 +24,6 @@ const ActivityCalendar = ({ activityLog }) => {
   };
 
   const days = generateDays();
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   
   return (
     <div className="activity-calendar-wrapper">

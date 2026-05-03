@@ -61,3 +61,52 @@ exports.askAI = async (req, res) => {
     });
   }
 };
+
+/**
+ * Generates a personalized 3-step career roadmap
+ */
+exports.getCareerRoadmap = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+    
+    // 1. Get RAG context for their interests
+    const interestQuery = user.interests?.join(' ') || user.department || 'technology';
+    const liveEvents = await aiRagService.getContext(interestQuery);
+
+    // 2. Transformer Logic (Simulated for roadmap)
+    const roadmap = {
+      role: `Future ${user.department || 'Tech'} Leader`,
+      steps: [
+        {
+          title: "Foundation: Build XP",
+          description: `Focus on technical events like ${user.department} workshops. Goal: Reach 1000 XP.`,
+          status: user.points >= 1000 ? 'Completed' : 'In Progress'
+        },
+        {
+          title: "Specialization: Hackathon Era",
+          description: "Participate in at least 2 national-level hackathons (Unstop) to build a portfolio.",
+          status: 'Upcoming'
+        },
+        {
+          title: "Leadership: Guild Master",
+          description: "Lead a Guild or Club to demonstrate management and teamwork skills.",
+          status: 'Upcoming'
+        }
+      ]
+    };
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        roadmap,
+        hasLiveContext: !!liveEvents
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Unable to generate roadmap.'
+    });
+  }
+};

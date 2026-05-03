@@ -69,14 +69,26 @@
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 1.75rem;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 2rem;
+  margin-top: 1rem;
 }
 
 .dashboard-main,
 .dashboard-side {
-  display: grid;
-  gap: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #6366f1;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+  display: block;
 }
 
 .card {

@@ -18,8 +18,28 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+// Production CORS configuration
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://gsp-frontend.vercel.app', // placeholder - update after deploy
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+
 app.use(express.json());
+
+// Health Check for Production
+app.get('/health', (req, res) => res.status(200).json({ status: 'GSP Backend Online', time: new Date() }));
 
 const seedDemoUser = async () => {
   const demoEmail = 'student@university.edu';

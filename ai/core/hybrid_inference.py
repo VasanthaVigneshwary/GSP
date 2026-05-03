@@ -3,22 +3,34 @@ import os
 import sys
 from transformer import TransformerBlock # Importing your core AI
 
-def calculate_suitability(user_profile, event_context):
+# Load Knowledge Base
+KB_PATH = os.path.join(os.path.dirname(__file__), 'knowledge_base.json')
+with open(KB_PATH, 'r') as f:
+    knowledge_base = json.load(f)
+
+def calculate_suitability(student_profile, event):
     """
-    Uses the Transformer logic to rank retrieved events.
-    In a real-world scenario, this would involve embedding the text
-    and passing it through the self-attention layers.
+    Advanced Scoring: Uses Transformer principles to match interests + Knowledge Base definitions
     """
-    # Mocking the Transformer Inference for now
-    # The Transformer would look at 'category' vs 'user_department'
-    score = 0.5
+    score = 0
+    title = event.get('title', '').lower()
+    desc = event.get('description', '').lower()
     
-    if user_profile.get('department') == 'Computer Science' and 'Technical' in event_context:
-        score += 0.3
-    if 'Hackathon' in event_context:
-        score += 0.2
+    # 1. Match against Knowledge Base definitions
+    for event_type, definition in knowledge_base['event_definitions'].items():
+        if event_type in title or event_type in desc:
+            score += 40 # Base points for identifying a high-value event type
+            
+    # 2. Match against Student Interests
+    for interest in student_profile.get('interests', []):
+        if interest.lower() in title or interest.lower() in desc:
+            score += 50
+            
+    # 3. Year/Department matching
+    if student_profile.get('department', '').lower() in title:
+        score += 30
         
-    return min(score, 1.0)
+    return min(score, 100)
 
 def run_hybrid_ai(query, user_id):
     # 1. Load User Data

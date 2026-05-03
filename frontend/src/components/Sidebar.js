@@ -9,12 +9,11 @@ const Sidebar = () => {
 
   const menuItems = [
     { name: 'Dashboard', path: '/dashboard', icon: '🏠' },
-    { name: 'Events', path: '/events', icon: '🔎' },
-    { name: 'Clubs', path: '/clubs', icon: '🏆' },
-    { name: 'Leaderboard', path: '/leaderboard', icon: '🏅' },
-    { name: 'Wishlist', path: '/wishlist', icon: '❤️' },
-    { name: 'Profile', path: '/profile/settings', icon: '👤' },
-    { name: 'Notifications', path: '/dashboard', icon: '🔔' }, // We'll handle this click specially in a real app, for now it navigates to dashboard
+    { name: 'Event Hub', path: '/events', icon: '🔎' },
+    { name: 'Guild Battles', path: '/clubs', icon: '🛡️' },
+    { name: 'Leaderboards', path: '/leaderboard', icon: '🏆' },
+    { name: 'My Wishlist', path: '/wishlist', icon: '❤️' },
+    { name: 'My Profile', path: '/profile/settings', icon: '👤' },
   ];
 
   return (

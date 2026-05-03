@@ -9,18 +9,18 @@ import NotificationCenter from '../components/NotificationCenter';
 import XPProgressBar from '../components/XPProgressBar';
 import ActivityCalendar from '../components/ActivityCalendar';
 import CertificateGallery from '../components/CertificateGallery';
-import AIAssistant from '../components/AIAssistant';
+import AIAssistant from '../components/AIAssistant'; // Restored
+import AiRoadmap from '../components/AiRoadmap';
 import { FederatedStore } from '../services/FederatedStore';
 import '../styles/dashboard.css';
 
 const Dashboard = () => {
-  const { user, updateUser, logout } = useAuth();
+  const { user, updateUser } = useAuth();
   const navigate = useNavigate();
   const [showScanner, setShowScanner] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [checkInStatus, setCheckInStatus] = useState({ loading: false, message: '', type: '' });
   const [activity, setActivity] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -141,10 +141,13 @@ const Dashboard = () => {
 
         <div className="dashboard-grid">
           <div className="dashboard-main">
+            <span className="section-label">🎯 Career Strategy</span>
+            <AiRoadmap />
             <AIAssistant user={user} />
             
             <div className="card">
-              <h2>Social Feed</h2>
+              <span className="section-label">🌐 Campus Social</span>
+              <h2>Recent Activity</h2>
               <div className="activity-feed">
                 {activity.length > 0 ? (
                   activity.map((item) => (
@@ -206,6 +209,7 @@ const Dashboard = () => {
           </div>
 
           <div className="dashboard-side">
+            <span className="section-label">👤 Identity & Stats</span>
             <div className="card">
               <h2>Profile details</h2>
               <div className="profile-info">
@@ -246,6 +250,7 @@ const Dashboard = () => {
             </div>
 
 
+            <span className="section-label">🏅 Achievements</span>
             <div className="card">
               <h2>Badges</h2>
               {user?.badges && user.badges.length > 0 ? (
