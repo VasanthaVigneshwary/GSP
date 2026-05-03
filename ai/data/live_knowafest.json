@@ -1,0 +1,90 @@
+[
+  {
+    "title": "Sixth National Conference on Recent Advancements in Science, Engineering and Technologies RASET-2026",
+    "description": "Organized by Bannari Amman Institute of Technology in Erode, Tamil Nadu. Event Type: National Conference",
+    "date": "2026-05-15T00:00:00.000Z",
+    "location": "Bannari Amman Institute of Technology, Erode",
+    "category": "Technical",
+    "points": 30,
+    "externalLink": "https://www.knowafest.com/explore/events/2026/03/1829-sixth-national-conference-on-recent-advancements-in-science-engineering-and-technologies-raset-2026-bannari-amman-institute-of-technology-national-conference-erode",
+    "isExternal": true,
+    "source": "Knowafest"
+  },
+  {
+    "title": "Project Sankalp: Code4Change Hackathon",
+    "description": "National Level Hackathon organized by Yenepoya (Deemed to be University). High-value competition.",
+    "date": "2026-05-20T00:00:00.000Z",
+    "location": "Yenepoya (Deemed to be University)",
+    "category": "Hackathon",
+    "points": 50,
+    "externalLink": "https://unstop.com/hackathons/project-sankalp-code4change-yenepoya-deemed-to-be-university-1681684",
+    "isExternal": true,
+    "source": "Unstop"
+  },
+  {
+    "title": "Devfusion 2.0 - The Developers Hackathon",
+    "description": "National Level Hackathon organized by Indian Institute of Technology (IIT), Bombay. High-value competition.",
+    "date": "2026-05-25T00:00:00.000Z",
+    "location": "IIT Bombay",
+    "category": "Hackathon",
+    "points": 75,
+    "externalLink": "https://unstop.com/hackathons/devfusion-20-the-developers-hackathon-iit-bombay-1678781",
+    "isExternal": true,
+    "source": "Unstop"
+  },
+  {
+    "title": "Bureau of Indian Standards x Sigma Squad AI Hackathon",
+    "description": "National Level AI Hackathon organized by Indian Institute of Technology (IIT), Tirupati. High-value competition.",
+    "date": "2026-05-28T00:00:00.000Z",
+    "location": "IIT Tirupati",
+    "category": "Hackathon",
+    "points": 75,
+    "externalLink": "https://unstop.com/hackathons/bureau-of-indian-standards-x-sigma-squad-ai-hackathon-indian-institute-of-technology-iit-tirupati-1679162",
+    "isExternal": true,
+    "source": "Unstop"
+  },
+  {
+    "title": "Uxathon 2026",
+    "description": "National Level UI/UX Hackathon organized by Birsa Institute of Technology (BIT), Sindri. High-value competition.",
+    "date": "2026-05-22T00:00:00.000Z",
+    "location": "BIT Sindri",
+    "category": "Hackathon",
+    "points": 50,
+    "externalLink": "https://unstop.com/hackathons/uxathon-hackoverse-birsa-institute-of-technology-bit-sindri-1682080",
+    "isExternal": true,
+    "source": "Unstop"
+  },
+  {
+    "title": "Decision Arena AI Hackathon",
+    "description": "National Level Hackathon organized by AI Academia. High-value competition.",
+    "date": "2026-06-05T00:00:00.000Z",
+    "location": "AI Academia",
+    "category": "Hackathon",
+    "points": 50,
+    "externalLink": "https://unstop.com/hackathons/decision-arena-ai-academia-1679913",
+    "isExternal": true,
+    "source": "Unstop"
+  },
+  {
+    "title": "GraphRAG Inference Hackathon",
+    "description": "National Level AI/Database Hackathon organized by TigerGraph. High-value competition.",
+    "date": "2026-06-10T00:00:00.000Z",
+    "location": "TigerGraph",
+    "category": "Hackathon",
+    "points": 100,
+    "externalLink": "https://unstop.com/hackathons/graphrag-inference-hackathon-by-tigergraph-tigergraph-1678762",
+    "isExternal": true,
+    "source": "Unstop"
+  },
+  {
+    "title": "Odoo x KSV Hackathon 2026",
+    "description": "National Level ERP/Software Hackathon organized by Kadi Sarva Vishwavidyalaya (KSV), Gujarat. High-value competition.",
+    "date": "2026-05-30T00:00:00.000Z",
+    "location": "KSV Gujarat",
+    "category": "Hackathon",
+    "points": 50,
+    "externalLink": "https://unstop.com/hackathons/odoo-x-ksv-hackathon-2026-kadi-sarva-vishwavidyalaya-ksv-gandhinagar-gujarat-1678683",
+    "isExternal": true,
+    "source": "Unstop"
+  }
+]

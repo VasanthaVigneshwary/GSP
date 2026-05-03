@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import eventService from '../services/eventService';
 import '../styles/eventDiscovery.css';
 
-const categories = ['All', 'Technical', 'Cultural', 'Sports', 'Workshop', 'Seminar', 'Other'];
+const categories = ['All', 'Hackathon', 'Technical', 'Cultural', 'Sports', 'Workshop', 'Seminar', 'Other'];
 
 const EventDiscovery = () => {
   const navigate = useNavigate();
@@ -15,6 +15,19 @@ const EventDiscovery = () => {
   const [query, setQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [dateFilter, setDateFilter] = useState('All');
+  const [sortBy, setSortBy] = useState('Date'); // New: Sorting state
+
+  const getCategoryIcon = (cat) => {
+    switch(cat) {
+      case 'Hackathon': return '⚡';
+      case 'Technical': return '💻';
+      case 'Workshop': return '🛠️';
+      case 'Cultural': return '🎨';
+      case 'Sports': return '🏆';
+      case 'Seminar': return '📢';
+      default: return '📍';
+    }
+  };
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -102,8 +115,6 @@ const EventDiscovery = () => {
     }
   };
 
-  const savedEventIds = new Set((user?.eventsSaved || []).map(String));
-
   const filteredEvents = events.filter((event) => {
     const categoryMatch = categoryFilter === 'All' || event.category === categoryFilter;
     
@@ -126,6 +137,12 @@ const EventDiscovery = () => {
     const eventText = `${event.title} ${event.description} ${event.location} ${event.organizer}`.toLowerCase();
 
     return categoryMatch && dateMatch && eventText.includes(lowerQuery);
+  });
+
+  // New: Smart Sorting Logic
+  const sortedEvents = [...filteredEvents].sort((a, b) => {
+    if (sortBy === 'XP') return (b.points || 0) - (a.points || 0);
+    return new Date(a.date) - new Date(b.date);
   });
 
 
@@ -190,18 +207,33 @@ const EventDiscovery = () => {
           </div>
         </div>
 
+        <div className="filter-group">
+          <label>Sort By</label>
+          <div className="category-chips">
+            {['Date', 'XP'].map((sort) => (
+              <button
+                key={sort}
+                type="button"
+                className={`category-chip ${sortBy === sort ? 'active' : ''}`}
+                onClick={() => setSortBy(sort)}
+              >
+                {sort === 'Date' ? '📅 Soonest' : '💎 Highest XP'}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="events-list">
         {loading && <p>Loading events...</p>}
         {error && <p className="error-text">{error}</p>}
-        {!loading && !error && filteredEvents.length === 0 && (
+        {!loading && !error && sortedEvents.length === 0 && (
           <p className="error-text">No events match your search criteria.</p>
         )}
-        {filteredEvents.map((event) => (
-          <div key={event._id} className="event-card">
+        {sortedEvents.map((event) => (
+          <div key={event._id} className={`event-card ${event.points >= 50 ? 'premium-card' : ''}`}>
             <div className="event-card-header">
-              <h2>{event.title}</h2>
+              <h2>{getCategoryIcon(event.category)} {event.title}</h2>
               <span className="event-category">{event.category}</span>
             </div>
             <p>{event.description}</p>
@@ -226,25 +258,25 @@ const EventDiscovery = () => {
                 </a>
               ) : (
                 <button 
-                  className={`btn ${event.registeredUsers.length >= event.capacity ? 'btn-waitlist' : 'btn-primary'}`}
+                  className={`btn ${event.registeredUsers?.length >= event.capacity ? 'btn-waitlist' : 'btn-primary'}`}
                   onClick={() => handleRegister(event._id)}
-                  disabled={event.registeredUsers.includes(user?._id) || event.waitlist?.includes(user?._id)}
+                  disabled={event.registeredUsers?.includes(user?._id) || event.waitlist?.includes(user?._id)}
                 >
-                  {event.registeredUsers.includes(user?._id) 
+                  {event.registeredUsers?.includes(user?._id) 
                     ? 'Registered' 
                     : event.waitlist?.includes(user?._id)
                       ? 'Waitlisted'
-                      : event.registeredUsers.length >= event.capacity 
+                      : event.registeredUsers?.length >= event.capacity 
                         ? 'Join Waitlist' 
                         : 'Register'}
                 </button>
               )}
 
               <button
-                className={`btn btn-secondary ${savedEventIds.has(String(event._id)) ? 'saved' : ''}`}
+                className={`btn btn-secondary ${new Set((user?.eventsSaved || []).map(String)).has(String(event._id)) ? 'saved' : ''}`}
                 onClick={() => handleSave(event._id)}
               >
-                {savedEventIds.has(String(event._id)) ? 'Saved' : 'Save'}
+                {new Set((user?.eventsSaved || []).map(String)).has(String(event._id)) ? 'Saved' : 'Save'}
               </button>
             </div>
           </div>

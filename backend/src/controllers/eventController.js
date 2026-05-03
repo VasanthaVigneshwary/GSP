@@ -1,5 +1,7 @@
 const Event = require('../models/Event');
 const User = require('../models/User');
+const fs = require('fs');
+const path = require('path');
 const { createNotification } = require('./notificationController');
 
 
@@ -20,9 +22,10 @@ exports.listEvents = async (req, res) => {
         .sort({ date: 1, createdAt: -1 })
         .limit(50);
     } catch (dbError) {
-      console.log('Database offline, providing LIVE Knowafest fallback.');
+      const livePath = path.resolve(__dirname, '../../../ai/data/live_knowafest.json');
+      console.log(`[AI Sync] DB Offline. Looking for live cache at: ${livePath}`);
+      
       try {
-        const livePath = path.join(__dirname, '../../../../ai/data/live_knowafest.json');
         if (fs.existsSync(livePath)) {
           const liveData = fs.readFileSync(livePath, 'utf8');
           events = JSON.parse(liveData);
