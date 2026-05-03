@@ -110,6 +110,19 @@ const userSchema = new mongoose.Schema(
       maxlength: [500, 'Bio cannot exceed 500 characters'],
       default: '',
     },
+    githubUsername: {
+      type: String,
+      default: '',
+    },
+    certificates: [
+      {
+        title: String,
+        issuer: String,
+        date: Date,
+        imageUrl: String,
+        link: String,
+      }
+    ],
     interests: [
       {
         type: String,

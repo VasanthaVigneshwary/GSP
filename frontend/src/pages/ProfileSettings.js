@@ -29,6 +29,8 @@ const ProfileSettings = () => {
     department: user?.department || 'Computer Science',
     year: user?.year || 'Freshman',
     interests: user?.interests || [],
+    githubUsername: user?.githubUsername || '',
+    certificates: user?.certificates || [],
     privacySettings: user?.privacySettings || {
       profileVisibility: 'Public',
       showPoints: true,
@@ -112,6 +114,49 @@ const ProfileSettings = () => {
                   {years.map(y => <option key={y} value={y}>{y}</option>)}
                 </select>
               </div>
+            </div>
+            <div className="input-group">
+              <label>GitHub Username (for activity points)</label>
+              <input 
+                type="text" 
+                name="githubUsername" 
+                value={formData.githubUsername} 
+                onChange={handleChange} 
+                placeholder="e.g. akash-c17"
+              />
+              <p className="hint">We sync your commits weekly to award bonus XP.</p>
+            </div>
+          </div>
+
+          <div className="settings-card card">
+            <h2>Showcase Certificates</h2>
+            <p className="hint">Highlight your achievements from workshops and events.</p>
+            <div className="certificates-list">
+              {formData.certificates.map((cert, idx) => (
+                <div key={idx} className="cert-item">
+                  <span>📜 {cert.title}</span>
+                  <button type="button" onClick={() => {
+                    const updated = formData.certificates.filter((_, i) => i !== idx);
+                    setFormData({...formData, certificates: updated});
+                  }}>Remove</button>
+                </div>
+              ))}
+              <button 
+                type="button" 
+                className="btn btn-secondary"
+                onClick={() => {
+                  const title = prompt('Certificate Title:');
+                  const issuer = prompt('Issuer:');
+                  if (title && issuer) {
+                    setFormData({
+                      ...formData, 
+                      certificates: [...formData.certificates, { title, issuer, date: new Date() }]
+                    });
+                  }
+                }}
+              >
+                + Add Certificate
+              </button>
             </div>
           </div>
 

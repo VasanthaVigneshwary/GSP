@@ -8,6 +8,7 @@ import QRScanner from '../components/QRScanner';
 import NotificationCenter from '../components/NotificationCenter';
 import XPProgressBar from '../components/XPProgressBar';
 import ActivityCalendar from '../components/ActivityCalendar';
+import CertificateGallery from '../components/CertificateGallery';
 import '../styles/dashboard.css';
 
 const Dashboard = () => {
@@ -189,6 +190,11 @@ const Dashboard = () => {
               </div>
               
               <p>Attend one more event to level up your campus leaderboard status.</p>
+            </div>
+
+            <div className="card showcase-section">
+              <h2>Achievement Showcase</h2>
+              <CertificateGallery certificates={user?.certificates || []} />
             </div>
           </div>
 
