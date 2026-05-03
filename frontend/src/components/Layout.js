@@ -1,5 +1,6 @@
 import React from 'react';
 import Sidebar from './Sidebar';
+import AiMentor from './AiMentor'; // New Import
 import './Layout.css';
 
 const Layout = ({ children }) => {
@@ -11,6 +12,7 @@ const Layout = ({ children }) => {
           {children}
         </div>
       </main>
+      <AiMentor /> 
     </div>
   );
 };
