@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/aiRoadmap.css';
 
 const AiRoadmap = () => {
   const [roadmap, setRoadmap] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRoadmap = async () => {
@@ -24,6 +26,11 @@ const AiRoadmap = () => {
     fetchRoadmap();
   }, []);
 
+  const handleStepClick = (title) => {
+    // Navigate to events page and search for the step title
+    navigate(`/events?search=${encodeURIComponent(title)}`);
+  };
+
   if (loading) return <div className="roadmap-loader">Generating your AI Career Path...</div>;
   if (!roadmap) return null;
 
@@ -37,14 +44,22 @@ const AiRoadmap = () => {
 
       <div className="roadmap-timeline">
         {roadmap.steps.map((step, index) => (
-          <div key={index} className={`roadmap-step ${step.status.toLowerCase().replace(' ', '-')}`}>
+          <div 
+            key={index} 
+            className={`roadmap-step ${step.status.toLowerCase().replace(' ', '-')}`}
+            onClick={() => handleStepClick(step.title)}
+            style={{ cursor: 'pointer' }}
+          >
             <div className="step-number">{index + 1}</div>
             <div className="step-content">
-              <h3>{step.title}</h3>
+              <h3>{step.title} ↗</h3>
               <p>{step.description}</p>
-              <span className={`status-pill ${step.status.toLowerCase().replace(' ', '-')}`}>
-                {step.status}
-              </span>
+              <div className="step-footer">
+                <span className={`status-pill ${step.status.toLowerCase().replace(' ', '-')}`}>
+                  {step.status}
+                </span>
+                <span className="action-hint">Find Events →</span>
+              </div>
             </div>
           </div>
         ))}

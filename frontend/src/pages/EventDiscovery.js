@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import eventService from '../services/eventService';
 import '../styles/eventDiscovery.css';
@@ -9,10 +9,16 @@ const categories = ['All', 'Hackathon', 'Technical', 'Cultural', 'Sports', 'Work
 const EventDiscovery = () => {
   // Production-ready Event Hub
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, updateUser } = useAuth();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [query, setQuery] = useState('');
+
+  // Use URL search param if available
+  const queryParams = new URLSearchParams(location.search);
+  const initialQuery = queryParams.get('search') || '';
+  
+  const [query, setQuery] = useState(initialQuery);
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [dateFilter, setDateFilter] = useState('All');
   const [sortBy, setSortBy] = useState('Date'); // New: Sorting state

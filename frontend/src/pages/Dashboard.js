@@ -11,6 +11,7 @@ import ActivityCalendar from '../components/ActivityCalendar';
 import CertificateGallery from '../components/CertificateGallery';
 import AIAssistant from '../components/AIAssistant'; // Restored
 import AiRoadmap from '../components/AiRoadmap';
+import MissionBoard from '../components/MissionBoard';
 import { FederatedStore } from '../services/FederatedStore';
 import '../styles/dashboard.css';
 
@@ -20,17 +21,11 @@ const Dashboard = () => {
   const [showScanner, setShowScanner] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [checkInStatus, setCheckInStatus] = useState({ loading: false, message: '', type: '' });
-  const [activity, setActivity] = useState([]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [activityRes, notifRes, statsRes] = await Promise.all([
-          userService.getActivityFeed(),
-          notificationService.getNotifications(),
-          userService.getUserStats()
-        ]);
-        setActivity(activityRes.data.activity || []);
+        const statsRes = await userService.getUserStats();
         
         // Sync user stats (points, streak, activityLog) with the context
         if (statsRes.data) {
@@ -145,31 +140,9 @@ const Dashboard = () => {
             <AIAssistant user={user} />
             
             <div className="card">
-              <span className="section-label">🌐 Campus Social</span>
-              <h2>Recent Activity</h2>
-              <div className="activity-feed">
-                {activity.length > 0 ? (
-                  activity.map((item) => (
-                    <div key={item._id} className="activity-item">
-                      <div className="activity-avatar">{item.name.charAt(0)}</div>
-                      <div className="activity-content">
-                        <p>
-                          <strong>{item.name}</strong> attended{' '}
-                          <strong>{item.eventsAttended[0]?.title || 'an event'}</strong>
-                        </p>
-                        <span className="activity-time">
-                          {item.eventsAttended[0] ? new Date(item.eventsAttended[0].date).toLocaleDateString() : 'Just now'}
-                        </span>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="empty-feed">Follow friends to see their activity here!</p>
-                )}
-              </div>
-              <button className="btn btn-secondary" style={{ marginTop: '1rem' }} onClick={() => navigate('/leaderboard')}>
-                Find Friends
-              </button>
+              <span className="section-label">🔥 Daily Missions</span>
+              <h2>Your Objectives</h2>
+              <MissionBoard />
             </div>
 
             <div className="card">

@@ -131,6 +131,7 @@ const startServer = async () => {
   app.use('/api/notifications', notificationRoutes);
   app.use('/api/clubs', clubRoutes);
   app.use('/api/ai', require('./routes/ai'));
+  app.use('/api/missions', require('./routes/mission'));
 
 
 
