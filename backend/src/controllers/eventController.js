@@ -427,4 +427,149 @@ exports.createEvent = async (req, res) => {
     });
   }
 };
-
+
+// Commit to attending an event (stronger RSVP than registration)
+exports.commitToEvent = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found',
+      });
+    }
+
+    const userId = req.user.id;
+
+    // Check if already committed
+    if (event.commitments.includes(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'You have already committed to this event',
+      });
+    }
+
+    // Add user to commitments
+    event.commitments.push(userId);
+    await event.save();
+
+    // Update user's committed events
+    await User.findByIdAndUpdate(
+      userId,
+      {
+        $addToSet: { committedEvents: event._id },
+        $inc: { points: 10 },
+      },
+      { new: true }
+    );
+
+    await createNotification(
+      userId,
+      'Commitment Confirmed',
+      `You've committed to attending ${event.title}! +10 points earned. This shows your strong commitment to the event.`,
+      'Event Commitment',
+      '/dashboard'
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: 'Commitment confirmed! +10 points earned.',
+      data: {
+        eventId: event._id,
+        commitmentCount: event.commitments.length,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Error committing to event',
+    });
+  }
+};
+
+// Uncommit from an event
+exports.uncommitFromEvent = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found',
+      });
+    }
+
+    const userId = req.user.id;
+
+    // Check if user is committed
+    if (!event.commitments.includes(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'You have not committed to this event',
+      });
+    }
+
+    // Remove from commitments
+    event.commitments.pull(userId);
+    await event.save();
+
+    // Remove from user's committed events
+    await User.findByIdAndUpdate(
+      userId,
+      {
+        $pull: { committedEvents: event._id },
+        $inc: { points: -5 }, // Penalty for uncommitting
+      },
+      { new: true }
+    );
+
+    await createNotification(
+      userId,
+      'Commitment Cancelled',
+      `You've cancelled your commitment to ${event.title}. -5 points deducted.`,
+      'Event Commitment',
+      '/dashboard'
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: 'Commitment cancelled. -5 points deducted.',
+      data: {
+        eventId: event._id,
+        commitmentCount: event.commitments.length,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Error uncommitting from event',
+    });
+  }
+};
+
+// Get events the user has committed to
+exports.getCommittedEvents = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate('committedEvents');
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        events: user.committedEvents,
+        count: user.committedEvents.length,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Error fetching committed events',
+    });
+  }
+};
+
+

@@ -57,6 +57,10 @@ const eventSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }],
+  commitments: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
   waitlist: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
