@@ -2,21 +2,26 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import authService from '../services/authService';
+import { motion } from 'framer-motion';
 import '../styles/auth.css';
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',
     email: '',
     password: '',
     passwordConfirm: '',
-    department: 'Computer Science',
-    year: 'Freshman'
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { updateUser } = useAuth();
+  const { user, updateUser } = useAuth();
+
+  React.useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,7 +40,12 @@ const Register = () => {
 
   return (
     <div className="auth-page">
-      <div className="auth-card">
+      <motion.div 
+        className="auth-card glass-panel"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
         <h1>Create Account</h1>
         <p className="subtitle">Join the GSP Student Community</p>
 
@@ -43,18 +53,18 @@ const Register = () => {
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="input-group">
-            <label>Full Name</label>
+            <label>Username</label>
             <input
               type="text"
-              placeholder="e.g., Alex Rivers"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder="e.g., alex_rivers"
+              value={formData.username}
+              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
               required
             />
           </div>
 
           <div className="input-group">
-            <label>Academic Email</label>
+            <label>Email ID</label>
             <input
               type="email"
               placeholder="e.g., alex@university.edu"
@@ -64,33 +74,7 @@ const Register = () => {
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div className="input-group">
-              <label>Department</label>
-              <select 
-                value={formData.department}
-                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-              >
-                <option value="Computer Science">Comp. Sci</option>
-                <option value="Information Tech">Info. Tech</option>
-                <option value="Electronics">Electronics</option>
-                <option value="Mechanical">Mechanical</option>
-                <option value="Business">Business</option>
-              </select>
-            </div>
-            <div className="input-group">
-              <label>Year</label>
-              <select 
-                value={formData.year}
-                onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-              >
-                <option value="Freshman">Freshman</option>
-                <option value="Sophomore">Sophomore</option>
-                <option value="Junior">Junior</option>
-                <option value="Senior">Senior</option>
-              </select>
-            </div>
-          </div>
+
 
           <div className="input-group">
             <label>Password</label>
@@ -122,7 +106,7 @@ const Register = () => {
         <div className="auth-footer">
           Already have an account? <Link to="/login">Sign in</Link>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

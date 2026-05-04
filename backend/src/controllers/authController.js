@@ -15,10 +15,10 @@ exports.signup = async (req, res) => {
       });
     }
 
-    const { name, email, password, passwordConfirm, department, year } = req.body;
+    const { username, email, password, passwordConfirm, department, year } = req.body;
 
     // Check if user already exists
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ $or: [{ email }, { username }] });
     if (user) {
       return res.status(400).json({
         success: false,
@@ -36,11 +36,11 @@ exports.signup = async (req, res) => {
 
     // Create user
     user = await User.create({
-      name,
+      username,
       email,
       password,
-      department,
-      year,
+      ...(department && { department }),
+      ...(year && { year }),
       points: 0,
     });
 
@@ -92,7 +92,7 @@ exports.login = async (req, res) => {
     if (email === 'demo@demo.com' && password === 'demo123') {
       const demoUser = {
         _id: 'demo-user-id',
-        name: 'Demo Student',
+        username: 'Demo Student',
         email,
         department: 'Computer Science',
         year: 'Freshman',

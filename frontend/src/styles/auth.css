@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at top left, #1e1b4b 0%, #020617 100%);
+  background: var(--bg-app);
   position: relative;
   overflow: hidden;
   font-family: 'Inter', sans-serif;
@@ -40,18 +40,15 @@
 }
 
 .auth-card h1 {
-  color: white;
+  color: var(--text-main);
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
   text-align: center;
-  background: linear-gradient(to right, #fff, #94a3b8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 .auth-card p.subtitle {
-  color: #94a3b8;
+  color: var(--text-muted);
   text-align: center;
   margin-bottom: 2.5rem;
 }
@@ -68,7 +65,7 @@
 
 .input-group label {
   display: block;
-  color: #e2e8f0;
+  color: var(--text-main);
   font-size: 0.875rem;
   font-weight: 500;
   margin-bottom: 0.5rem;
@@ -77,11 +74,11 @@
 .input-group input, 
 .input-group select {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 0.875rem 1rem;
-  color: white;
+  color: var(--text-main);
   font-size: 1rem;
   transition: all 0.3s ease;
   outline: none;
@@ -89,9 +86,9 @@
 
 .input-group input:focus,
 .input-group select:focus {
-  border-color: #6366f1;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  border-color: var(--primary);
+  background: var(--surface-hover);
+  box-shadow: 0 0 0 4px var(--primary-light);
 }
 
 .btn-auth {
@@ -119,12 +116,12 @@
 .auth-footer {
   text-align: center;
   margin-top: 2rem;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 0.875rem;
 }
 
 .auth-footer a {
-  color: #818cf8;
+  color: var(--primary);
   text-decoration: none;
   font-weight: 600;
   margin-left: 0.5rem;

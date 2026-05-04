@@ -1,10 +1,13 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { Sun, Moon, LogOut } from 'lucide-react';
 import './Sidebar.css';
 
 const Sidebar = () => {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const menuItems = [
@@ -26,7 +29,7 @@ const Sidebar = () => {
       <div className="sidebar-user">
         <div className="user-avatar">{user?.name?.charAt(0) || 'S'}</div>
         <div className="user-info">
-          <p className="user-name">{user?.name || 'Student'}</p>
+          <p className="user-name">{user?.username || 'Student'}</p>
           <p className="user-level">Lvl {Math.floor((user?.points || 0) / 100) + 1}</p>
         </div>
       </div>
@@ -45,8 +48,12 @@ const Sidebar = () => {
       </nav>
 
       <div className="sidebar-footer">
+        <button className="theme-toggle-btn" onClick={toggleTheme} title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}>
+          {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+          <span className="nav-text">{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
+        </button>
         <button className="logout-btn" onClick={logout}>
-          <span className="nav-icon">🚪</span>
+          <LogOut size={20} className="nav-icon" />
           <span className="nav-text">Sign Out</span>
         </button>
       </div>

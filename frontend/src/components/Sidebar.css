@@ -116,6 +116,31 @@
   border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
+.theme-toggle-btn,
+.logout-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: none;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  margin-bottom: 0.5rem;
+}
+
+.theme-toggle-btn {
+  color: var(--text-secondary);
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(99, 102, 241, 0.05);
+  color: var(--primary);
+  transform: translateX(4px);
+}
+
 .logout-btn {
   width: 100%;
   display: flex;

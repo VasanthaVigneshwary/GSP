@@ -16,7 +16,8 @@ const AiRoadmap = () => {
         const response = await axios.get(`${API_BASE_URL}/ai/roadmap`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setRoadmap(response.data.data.roadmap);
+        const fetchedRoadmap = response.data?.data?.roadmap || response.data?.roadmap || response.data?.data || response.data || null;
+        setRoadmap(fetchedRoadmap);
       } catch (err) {
         console.error('Failed to load roadmap');
       } finally {
@@ -43,7 +44,7 @@ const AiRoadmap = () => {
       </div>
 
       <div className="roadmap-timeline">
-        {roadmap.steps.map((step, index) => (
+        {roadmap.steps && roadmap.steps.map((step, index) => (
           <div 
             key={index} 
             className={`roadmap-step ${step.status.toLowerCase().replace(' ', '-')}`}

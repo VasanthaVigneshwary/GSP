@@ -14,7 +14,8 @@ const MissionBoard = () => {
         const response = await axios.get('/api/missions/daily', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setMissions(response.data.data.missions);
+        const fetchedMissions = response.data?.data?.missions || response.data?.data || response.data || [];
+        setMissions(Array.isArray(fetchedMissions) ? fetchedMissions : []);
       } catch (err) {
         console.error('Failed to fetch missions');
       } finally {
@@ -63,7 +64,7 @@ const MissionBoard = () => {
   return (
     <div className="mission-hub">
       <div className="mission-list">
-        {missions.length > 0 ? (
+        {missions && missions.length > 0 ? (
           missions.map((mission) => (
             <div 
               key={mission._id} 

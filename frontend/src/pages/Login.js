@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import authService from '../services/authService';
+import { motion } from 'framer-motion';
 import '../styles/auth.css';
 
 const Login = () => {
@@ -9,7 +10,13 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { updateUser } = useAuth();
+  const { user, updateUser } = useAuth();
+
+  React.useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +27,7 @@ const Login = () => {
       updateUser(data.user);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid email or password');
+      setError(err.response?.data?.message || 'Invalid Email ID or password');
     } finally {
       setLoading(false);
     }
@@ -28,7 +35,12 @@ const Login = () => {
 
   return (
     <div className="auth-page">
-      <div className="auth-card">
+      <motion.div 
+        className="auth-card glass-panel"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
         <h1>Welcome Back</h1>
         <p className="subtitle">Sign in to your GSP account</p>
 
@@ -36,7 +48,7 @@ const Login = () => {
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="input-group">
-            <label>Academic Email</label>
+            <label>Email ID</label>
             <input
               type="email"
               placeholder="e.g., student@university.edu"
@@ -65,7 +77,7 @@ const Login = () => {
         <div className="auth-footer">
           Don't have an account? <Link to="/register">Create one</Link>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 .layout-container {
   display: flex;
   min-height: 100vh;
-  background: #f8fafc; /* Clean light background */
+  background: transparent;
 }
 
 .layout-content {

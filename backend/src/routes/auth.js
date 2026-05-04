@@ -11,12 +11,10 @@ const router = express.Router();
 router.post(
   '/signup',
   [
-    body('name', 'Name is required').trim().isLength({ min: 2, max: 50 }),
+    body('username', 'Username is required').trim().isLength({ min: 2, max: 50 }),
     body('email', 'Please include a valid email').isEmail().normalizeEmail(),
     body('password', 'Password must be at least 6 characters').isLength({ min: 6 }),
     body('passwordConfirm', 'Password confirmation is required').isLength({ min: 6 }),
-    body('department', 'Department is required').notEmpty(),
-    body('year', 'Year is required').notEmpty(),
   ],
   authController.signup
 );

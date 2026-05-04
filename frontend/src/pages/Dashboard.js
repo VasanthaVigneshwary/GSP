@@ -13,6 +13,7 @@ import AIAssistant from '../components/AIAssistant'; // Restored
 import AiRoadmap from '../components/AiRoadmap';
 import MissionBoard from '../components/MissionBoard';
 import { FederatedStore } from '../services/FederatedStore';
+import { motion } from 'framer-motion';
 import '../styles/dashboard.css';
 
 const Dashboard = () => {
@@ -88,7 +89,12 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      <div className="dashboard-shell">
+      <motion.div 
+        className="dashboard-shell"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         <div className="dashboard-hero">
           <div className="dashboard-hero-content">
             <p className="eyebrow">Student Hub</p>
@@ -139,13 +145,19 @@ const Dashboard = () => {
             <AiRoadmap />
             <AIAssistant user={user} />
             
-            <div className="card">
+            <motion.div 
+              className="glass-panel" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+            >
               <span className="section-label">🔥 Daily Missions</span>
               <h2>Your Objectives</h2>
               <MissionBoard />
-            </div>
+            </motion.div>
 
-            <div className="card">
+            <motion.div 
+              className="glass-panel" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+            >
 
               <h2>Your Stats</h2>
               <div className="stats">
@@ -172,17 +184,23 @@ const Dashboard = () => {
               </div>
               
               <p>Attend one more event to level up your campus leaderboard status.</p>
-            </div>
+            </motion.div>
 
-            <div className="card showcase-section">
+            <motion.div 
+              className="glass-panel showcase-section" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+            >
               <h2>Achievement Showcase</h2>
               <CertificateGallery certificates={user?.certificates || []} />
-            </div>
+            </motion.div>
           </div>
 
           <div className="dashboard-side">
             <span className="section-label">👤 Identity & Stats</span>
-            <div className="card">
+            <motion.div 
+              className="glass-panel" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
+            >
               <h2>Profile details</h2>
               <div className="profile-info">
                 <p>
@@ -219,11 +237,14 @@ const Dashboard = () => {
               <button className="btn btn-secondary" style={{ width: '100%', marginTop: '1rem' }} onClick={() => navigate('/profile/settings')}>
                 Edit Profile
               </button>
-            </div>
+            </motion.div>
 
 
             <span className="section-label">🏅 Achievements</span>
-            <div className="card">
+            <motion.div 
+              className="glass-panel" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}
+            >
               <h2>Badges</h2>
               {user?.badges && user.badges.length > 0 ? (
                 <div className="badges-container">
@@ -236,7 +257,7 @@ const Dashboard = () => {
               ) : (
                 <p>No badges yet. Join events to unlock achievements.</p>
               )}
-            </div>
+            </motion.div>
           </div>
         </div>
 
@@ -245,7 +266,7 @@ const Dashboard = () => {
             setShowNotifications(false);
           }} />
         )}
-      </div>
+      </motion.div>
     </div>
 
   );

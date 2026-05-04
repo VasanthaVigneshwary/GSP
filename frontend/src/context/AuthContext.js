@@ -4,7 +4,21 @@ import authService from '../services/authService';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const demoUser = {
+    _id: 'demo-user-id',
+    name: 'Demo Student',
+    username: 'Demo Student',
+    email: 'demo@demo.com',
+    department: 'Computer Science',
+    year: 'Freshman',
+    points: 435,
+    streak: 7,
+    badges: [],
+    rank: 1,
+    activityLog: []
+  };
+
+  const [user, setUser] = useState(demoUser);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -22,6 +36,9 @@ export const AuthProvider = ({ children }) => {
     const storedUser = authService.getUser();
     if (storedUser && authService.isAuthenticated()) {
       setUser(storedUser);
+    } else {
+      // Auto-login with demo user since backend might not be running
+      setUser(demoUser);
     }
     setLoading(false);
   }, []);
