@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { FederatedStore } from '../services/FederatedStore';
+import axios from 'axios';
 import '../styles/profileSettings.css';
 
 const departments = [
@@ -29,6 +31,8 @@ const ProfileSettings = () => {
     department: user?.department || 'Computer Science',
     year: user?.year || 'Freshman',
     interests: user?.interests || [],
+    githubUsername: user?.githubUsername || '',
+    certificates: user?.certificates || [],
     privacySettings: user?.privacySettings || {
       profileVisibility: 'Public',
       showPoints: true,
@@ -73,6 +77,31 @@ const ProfileSettings = () => {
     }
   };
 
+  const handleSyncLearning = async () => {
+    setLoading(true);
+    try {
+      const contribution = FederatedStore.generateWeekendContribution(user);
+      if (!contribution) {
+        alert('No new learning data to sync yet. Keep using the app!');
+        return;
+      }
+
+      const token = localStorage.getItem('token');
+      await axios.post('http://localhost:5000/api/users/learning/contribute', 
+        { contribution },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      FederatedStore.clearMemory();
+      setSuccess('Learning contribution synced to Hub!');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      alert('Failed to sync learning: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="profile-settings-container">
       <div className="settings-shell">
@@ -112,6 +141,49 @@ const ProfileSettings = () => {
                   {years.map(y => <option key={y} value={y}>{y}</option>)}
                 </select>
               </div>
+            </div>
+            <div className="input-group">
+              <label>GitHub Username (for activity points)</label>
+              <input 
+                type="text" 
+                name="githubUsername" 
+                value={formData.githubUsername} 
+                onChange={handleChange} 
+                placeholder="e.g. akash-c17"
+              />
+              <p className="hint">We sync your commits weekly to award bonus XP.</p>
+            </div>
+          </div>
+
+          <div className="settings-card card">
+            <h2>Showcase Certificates</h2>
+            <p className="hint">Highlight your achievements from workshops and events.</p>
+            <div className="certificates-list">
+              {formData.certificates.map((cert, idx) => (
+                <div key={idx} className="cert-item">
+                  <span>📜 {cert.title}</span>
+                  <button type="button" onClick={() => {
+                    const updated = formData.certificates.filter((_, i) => i !== idx);
+                    setFormData({...formData, certificates: updated});
+                  }}>Remove</button>
+                </div>
+              ))}
+              <button 
+                type="button" 
+                className="btn btn-secondary"
+                onClick={() => {
+                  const title = prompt('Certificate Title:');
+                  const issuer = prompt('Issuer:');
+                  if (title && issuer) {
+                    setFormData({
+                      ...formData, 
+                      certificates: [...formData.certificates, { title, issuer, date: new Date() }]
+                    });
+                  }
+                }}
+              >
+                + Add Certificate
+              </button>
             </div>
           </div>
 
@@ -176,6 +248,15 @@ const ProfileSettings = () => {
             {success && <div className="success-banner">{success}</div>}
             <button type="submit" className="btn btn-primary" disabled={loading}>
               {loading ? 'Saving Changes...' : 'Save All Changes'}
+            </button>
+            <button 
+              type="button" 
+              className="btn btn-secondary" 
+              onClick={handleSyncLearning} 
+              disabled={loading}
+              style={{ marginLeft: '1rem', background: 'var(--success-color)', color: 'white' }}
+            >
+              🚀 Sync Learning to Hub
             </button>
           </div>
         </form>

@@ -6,31 +6,48 @@ import userService from '../services/userService';
 import notificationService from '../services/notificationService';
 import QRScanner from '../components/QRScanner';
 import NotificationCenter from '../components/NotificationCenter';
+import XPProgressBar from '../components/XPProgressBar';
+import ActivityCalendar from '../components/ActivityCalendar';
+import CertificateGallery from '../components/CertificateGallery';
+import AIAssistant from '../components/AIAssistant'; // Restored
+import AiRoadmap from '../components/AiRoadmap';
+import MissionBoard from '../components/MissionBoard';
+import { FederatedStore } from '../services/FederatedStore';
+import { motion } from 'framer-motion';
 import '../styles/dashboard.css';
 
 const Dashboard = () => {
-  const { user, updateUser, logout } = useAuth();
+  const { user, updateUser } = useAuth();
   const navigate = useNavigate();
   const [showScanner, setShowScanner] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [checkInStatus, setCheckInStatus] = useState({ loading: false, message: '', type: '' });
-  const [activity, setActivity] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [activityRes, notifRes] = await Promise.all([
-          userService.getActivityFeed(),
-          notificationService.getNotifications()
-        ]);
-        setActivity(activityRes.data.activity || []);
-        setUnreadCount(notifRes.data.unreadCount || 0);
+        const statsRes = await userService.getUserStats();
+        
+        // Sync user stats (points, streak, activityLog) with the context
+        if (statsRes.data) {
+          updateUser({
+            ...user,
+            points: statsRes.data.points,
+            streak: statsRes.data.streak,
+            activityLog: statsRes.data.activityLog,
+            badges: statsRes.data.badges,
+            rank: statsRes.data.rank,
+          });
+        }
       } catch (err) {
         console.error('Failed to fetch dashboard data');
       }
     };
-    fetchDashboardData();
+    if (user) {
+      fetchDashboardData();
+      FederatedStore.logInteraction('Dashboard View', { timestamp: new Date() });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
@@ -72,7 +89,12 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      <div className="dashboard-shell">
+      <motion.div 
+        className="dashboard-shell"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         <div className="dashboard-hero">
           <div className="dashboard-hero-content">
             <p className="eyebrow">Student Hub</p>
@@ -81,24 +103,7 @@ const Dashboard = () => {
               Manage your campus activity stream, explore upcoming events, and earn points with every
               event you attend.
             </p>
-            <div className="hero-actions">
-              <button className="btn btn-primary" onClick={() => navigate('/events')}>
-                Discover events
-              </button>
-              <button className="btn btn-checkin" onClick={() => setShowScanner(true)}>
-                📸 Check-in
-              </button>
-              <button className="btn btn-host" onClick={() => navigate('/create-event')}>
-                🎪 Host an Event
-              </button>
-
-              <button className="btn btn-secondary" onClick={() => navigate('/wishlist')}>
-                View wishlist
-              </button>
-              <button className="btn btn-secondary" onClick={logout}>
-                Logout
-              </button>
-            </div>
+            <XPProgressBar points={user?.points || 0} />
           </div>
           <div className="hero-metrics">
             <div className="stat-box">
@@ -136,34 +141,23 @@ const Dashboard = () => {
 
         <div className="dashboard-grid">
           <div className="dashboard-main">
-            <div className="card">
-              <h2>Social Feed</h2>
-              <div className="activity-feed">
-                {activity.length > 0 ? (
-                  activity.map((item) => (
-                    <div key={item._id} className="activity-item">
-                      <div className="activity-avatar">{item.name.charAt(0)}</div>
-                      <div className="activity-content">
-                        <p>
-                          <strong>{item.name}</strong> attended{' '}
-                          <strong>{item.eventsAttended[0]?.title || 'an event'}</strong>
-                        </p>
-                        <span className="activity-time">
-                          {item.eventsAttended[0] ? new Date(item.eventsAttended[0].date).toLocaleDateString() : 'Just now'}
-                        </span>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="empty-feed">Follow friends to see their activity here!</p>
-                )}
-              </div>
-              <button className="btn btn-secondary" style={{ marginTop: '1rem' }} onClick={() => navigate('/leaderboard')}>
-                Find Friends
-              </button>
-            </div>
+            <span className="section-label">🎯 Career Strategy</span>
+            <AiRoadmap />
+            <AIAssistant user={user} />
+            
+            <motion.div 
+              className="glass-panel" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+            >
+              <span className="section-label">🔥 Daily Missions</span>
+              <h2>Your Objectives</h2>
+              <MissionBoard />
+            </motion.div>
 
-            <div className="card">
+            <motion.div 
+              className="glass-panel" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+            >
 
               <h2>Your Stats</h2>
               <div className="stats">
@@ -180,12 +174,33 @@ const Dashboard = () => {
                   <p>Department</p>
                 </div>
               </div>
+              
+              <div className="activity-section">
+                <h3>Activity Insight</h3>
+                <ActivityCalendar activityLog={user?.activityLog || []} />
+                <div className="streak-info">
+                  <span className="streak-badge">🔥 {user?.streak || 0} Day Streak</span>
+                </div>
+              </div>
+              
               <p>Attend one more event to level up your campus leaderboard status.</p>
-            </div>
+            </motion.div>
+
+            <motion.div 
+              className="glass-panel showcase-section" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+            >
+              <h2>Achievement Showcase</h2>
+              <CertificateGallery certificates={user?.certificates || []} />
+            </motion.div>
           </div>
 
           <div className="dashboard-side">
-            <div className="card">
+            <span className="section-label">👤 Identity & Stats</span>
+            <motion.div 
+              className="glass-panel" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
+            >
               <h2>Profile details</h2>
               <div className="profile-info">
                 <p>
@@ -222,10 +237,14 @@ const Dashboard = () => {
               <button className="btn btn-secondary" style={{ width: '100%', marginTop: '1rem' }} onClick={() => navigate('/profile/settings')}>
                 Edit Profile
               </button>
-            </div>
+            </motion.div>
 
 
-            <div className="card">
+            <span className="section-label">🏅 Achievements</span>
+            <motion.div 
+              className="glass-panel" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}
+            >
               <h2>Badges</h2>
               {user?.badges && user.badges.length > 0 ? (
                 <div className="badges-container">
@@ -238,42 +257,16 @@ const Dashboard = () => {
               ) : (
                 <p>No badges yet. Join events to unlock achievements.</p>
               )}
-            </div>
+            </motion.div>
           </div>
-        </div>
-
-        <div className="dashboard-footer">
-          <button className="btn" onClick={() => navigate('/dashboard')}>
-            🏠
-          </button>
-          <button className="btn" onClick={() => navigate('/profile/settings')}>
-            👤
-          </button>
-          <button className="btn" onClick={() => navigate('/events')}>
-            🔎
-          </button>
-          <button className="btn" onClick={() => navigate('/wishlist')}>
-            ❤️
-          </button>
-          <button className="btn" onClick={() => navigate('/leaderboard')}>
-            🏅
-          </button>
-          <button className="btn" onClick={() => navigate('/clubs')}>
-            🏆
-          </button>
-
-          <button className="btn" onClick={() => setShowNotifications(true)}>
-            🔔 {unreadCount > 0 && <span className="notif-badge">{unreadCount}</span>}
-          </button>
         </div>
 
         {showNotifications && (
           <NotificationCenter onClose={() => {
             setShowNotifications(false);
-            setUnreadCount(0); // Reset count after viewing
           }} />
         )}
-      </div>
+      </motion.div>
     </div>
 
   );

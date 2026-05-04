@@ -1,9 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
+// import Login from './pages/Login';
+// import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import EventDiscovery from './pages/EventDiscovery';
 import Wishlist from './pages/Wishlist';
@@ -11,6 +12,7 @@ import Leaderboard from './pages/Leaderboard';
 import EventCreation from './pages/EventCreation';
 import ProfileSettings from './pages/ProfileSettings';
 import Clubs from './pages/Clubs';
+import Layout from './components/Layout';
 import './styles/app.css';
 
 
@@ -20,15 +22,18 @@ import './styles/app.css';
 function App() {
   return (
     <Router>
-      <AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/signup" element={<Navigate to="/dashboard" replace />} />
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <Layout>
+                  <Dashboard />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -36,7 +41,9 @@ function App() {
             path="/events"
             element={
               <ProtectedRoute>
-                <EventDiscovery />
+                <Layout>
+                  <EventDiscovery />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -44,7 +51,9 @@ function App() {
             path="/wishlist"
             element={
               <ProtectedRoute>
-                <Wishlist />
+                <Layout>
+                  <Wishlist />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -52,7 +61,9 @@ function App() {
             path="/leaderboard"
             element={
               <ProtectedRoute>
-                <Leaderboard />
+                <Layout>
+                  <Leaderboard />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -60,7 +71,9 @@ function App() {
             path="/create-event"
             element={
               <ProtectedRoute>
-                <EventCreation />
+                <Layout>
+                  <EventCreation />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -68,7 +81,9 @@ function App() {
             path="/profile/settings"
             element={
               <ProtectedRoute>
-                <ProfileSettings />
+                <Layout>
+                  <ProfileSettings />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -76,7 +91,9 @@ function App() {
             path="/clubs"
             element={
               <ProtectedRoute>
-                <Clubs />
+                <Layout>
+                  <Clubs />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -85,9 +102,10 @@ function App() {
 
 
 
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </AuthProvider>
+      </ThemeProvider>
     </Router>
   );
 }

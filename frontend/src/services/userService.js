@@ -13,6 +13,16 @@ const userService = {
     return response.data;
   },
 
+  getDepartmentLeaderboard: async () => {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(`${API_BASE_URL}/users/leaderboard/departments`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  },
+
   getUserStats: async () => {
     const token = localStorage.getItem('token');
     const response = await axios.get(`${API_BASE_URL}/users/stats`, {

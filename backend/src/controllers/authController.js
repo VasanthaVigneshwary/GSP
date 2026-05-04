@@ -15,10 +15,10 @@ exports.signup = async (req, res) => {
       });
     }
 
-    const { name, email, password, passwordConfirm, department, year } = req.body;
+    const { username, email, password, passwordConfirm, department, year } = req.body;
 
     // Check if user already exists
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ $or: [{ email }, { username }] });
     if (user) {
       return res.status(400).json({
         success: false,
@@ -36,11 +36,11 @@ exports.signup = async (req, res) => {
 
     // Create user
     user = await User.create({
-      name,
+      username,
       email,
       password,
-      department,
-      year,
+      ...(department && { department }),
+      ...(year && { year }),
       points: 0,
     });
 
@@ -92,11 +92,19 @@ exports.login = async (req, res) => {
     if (email === 'demo@demo.com' && password === 'demo123') {
       const demoUser = {
         _id: 'demo-user-id',
-        name: 'Demo Student',
+        username: 'Demo Student',
         email,
         department: 'Computer Science',
         year: 'Freshman',
-        points: 0,
+        points: 435,
+        streak: 7,
+        activityLog: [
+          { date: new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0], count: 3 },
+          { date: new Date(Date.now() - 86400000 * 1).toISOString().split('T')[0], count: 5 },
+          { date: new Date().toISOString().split('T')[0], count: 2 },
+          { date: new Date(Date.now() - 86400000 * 10).toISOString().split('T')[0], count: 1 },
+          { date: new Date(Date.now() - 86400000 * 15).toISOString().split('T')[0], count: 4 },
+        ],
         eventsSaved: [],
       };
       const token = generateToken(demoUser._id);

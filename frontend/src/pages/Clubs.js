@@ -6,11 +6,28 @@ import '../styles/clubs.css';
 
 const Clubs = () => {
   const { user, updateUser } = useAuth();
-  const navigate = useNavigate();
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [formData, setFormData] = useState({ name: '', description: '', category: 'Technical' });
+
+  const getGuildLevel = (points) => {
+    if (points >= 10000) return { name: 'Platinum', color: '#e5e7eb', level: 5 };
+    if (points >= 5000) return { name: 'Gold', color: '#fcd34d', level: 4 };
+    if (points >= 2500) return { name: 'Silver', color: '#94a3b8', level: 3 };
+    if (points >= 1000) return { name: 'Bronze', color: '#d97706', level: 2 };
+    return { name: 'Novice', color: '#a8a29e', level: 1 };
+  };
+
+  const getCategoryIcon = (cat) => {
+    switch(cat) {
+      case 'Technical': return '🛡️';
+      case 'Cultural': return '🎭';
+      case 'Sports': return '⚔️';
+      case 'Social': return '🤝';
+      default: return '🚩';
+    }
+  };
 
   const fetchClubs = async () => {
     try {
@@ -87,20 +104,36 @@ const Clubs = () => {
             <p>Loading...</p>
           ) : clubs.length > 0 ? (
             <div className="club-rank-list">
-              {clubs.map((club, index) => (
-                <div key={club._id} className={`club-rank-item ${user?.club === club._id ? 'my-club' : ''}`}>
-                  <div className="rank-num">#{index + 1}</div>
-                  <div className="club-info">
-                    <h3>{club.name}</h3>
-                    <span className="category-pill">{club.category}</span>
+              {clubs.map((club, index) => {
+                const guild = getGuildLevel(club.points);
+                return (
+                  <div key={club._id} className={`club-rank-item ${user?.club === club._id ? 'my-club' : ''}`}>
+                    <div className="rank-num">#{index + 1}</div>
+                    <div className="guild-shield" style={{ borderColor: guild.color }}>
+                      {getCategoryIcon(club.category)}
+                    </div>
+                    <div className="club-info">
+                      <h3>{club.name}</h3>
+                      <div className="guild-level-tag" style={{ background: guild.color }}>
+                        Level {guild.level} {guild.name}
+                      </div>
+                    </div>
+                    <div className="guild-stats">
+                      <div className="member-count">👥 {club.members.length}</div>
+                      <div className="club-score">{club.points} XP</div>
+                      <div className="xp-bar-mini">
+                        <div 
+                          className="xp-fill" 
+                          style={{ width: `${(club.points % 1000) / 10}%`, background: guild.color }}
+                        ></div>
+                      </div>
+                    </div>
+                    {!user?.club && (
+                      <button className="btn btn-sm btn-primary" onClick={() => handleJoin(club._id)}>Join Guild</button>
+                    )}
                   </div>
-                  <div className="member-count">👥 {club.members.length} members</div>
-                  <div className="club-score">{club.points} pts</div>
-                  {!user?.club && (
-                    <button className="btn btn-sm btn-outline" onClick={() => handleJoin(club._id)}>Join</button>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <p className="empty">No clubs found. Be the first to start one!</p>

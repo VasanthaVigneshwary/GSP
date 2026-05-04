@@ -6,22 +6,28 @@ import '../styles/leaderboard.css';
 const Leaderboard = () => {
   const navigate = useNavigate();
   const [leaders, setLeaders] = useState([]);
+  const [deptLeaders, setDeptLeaders] = useState([]); // New: Department data
+  const [activeTab, setActiveTab] = useState('Students'); // New: Tab state
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchLeaderboard = async () => {
+    const fetchAllData = async () => {
       try {
-        const response = await userService.getLeaderboard();
-        setLeaders(response.data.leaderboard || []);
+        const [studentRes, deptRes] = await Promise.all([
+          userService.getLeaderboard(),
+          userService.getDepartmentLeaderboard()
+        ]);
+        setLeaders(studentRes.data.leaderboard || []);
+        setDeptLeaders(deptRes.data.leaderboard || []);
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load leaderboard');
+        setError(err.response?.data?.message || 'Failed to load rankings');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchLeaderboard();
+    fetchAllData();
   }, []);
 
   return (
@@ -33,24 +39,41 @@ const Leaderboard = () => {
           <p>Compete with fellow students and reach the top of the rankings.</p>
         </div>
 
-        <div className="podium">
-          {leaders.slice(0, 3).map((leader, index) => (
-            <div key={leader._id} className={`podium-spot spot-${index + 1}`}>
-              <div className="rank-badge">{index + 1}</div>
-              <div className="avatar-placeholder">{leader.name.charAt(0)}</div>
-              <h3>{leader.name}</h3>
-              <p className="points">{leader.points} pts</p>
-              <p className="dept">{leader.department}</p>
-            </div>
-          ))}
+        <div className="tab-switcher">
+          <button 
+            className={`tab-btn ${activeTab === 'Students' ? 'active' : ''}`}
+            onClick={() => setActiveTab('Students')}
+          >
+            👤 Students
+          </button>
+          <button 
+            className={`tab-btn ${activeTab === 'Departments' ? 'active' : ''}`}
+            onClick={() => setActiveTab('Departments')}
+          >
+            🏢 Departments
+          </button>
         </div>
+
+        {activeTab === 'Students' && (
+          <div className="podium">
+            {leaders.slice(0, 3).map((leader, index) => (
+              <div key={leader._id} className={`podium-spot spot-${index + 1}`}>
+                <div className="rank-badge">{index + 1}</div>
+                <div className="avatar-placeholder">{leader.name.charAt(0)}</div>
+                <h3>{leader.name}</h3>
+                <p className="points">{leader.points} pts</p>
+                <p className="dept">{leader.department}</p>
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="leaderboard-table-card">
           {loading ? (
             <div className="loading">Loading rankings...</div>
           ) : error ? (
             <div className="error">{error}</div>
-          ) : (
+          ) : activeTab === 'Students' ? (
             <table className="leaderboard-table">
               <thead>
                 <tr>
@@ -78,6 +101,33 @@ const Leaderboard = () => {
                       </div>
                     </td>
                     <td className="points-cell">{leader.points}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <table className="leaderboard-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Department</th>
+                  <th>Student Count</th>
+                  <th>Avg XP</th>
+                  <th>Total XP</th>
+                </tr>
+              </thead>
+              <tbody>
+                {deptLeaders.map((dept, index) => (
+                  <tr key={dept.name} className={index < 3 ? 'top-three' : ''}>
+                    <td className="rank-cell">#{index + 1}</td>
+                    <td className="user-cell">
+                      <div className="user-info">
+                        <span className="user-name">{dept.name}</span>
+                      </div>
+                    </td>
+                    <td>{dept.studentCount} Students</td>
+                    <td>{dept.avgPoints} XP</td>
+                    <td className="points-cell">{dept.totalPoints}</td>
                   </tr>
                 ))}
               </tbody>
